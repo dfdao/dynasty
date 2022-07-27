@@ -11,6 +11,27 @@ function simpleAuth(req, res, next) {
   console.log("hello!");
   console.log("req", req.body);
   // if not post, delete, patch, or put request execute post request
+  const obj = JSON.parse(fs.readFileSync("db.json", "utf8"));
+  for (round in obj.rounds) {
+    const start = req.body.startTime;
+    const end = req.body.endTime;
+    if (round.startTime > start && round.startTime < end)
+      return res
+        .status(401)
+        .send({ error: "start time falls within previously created round" });
+    if (round.endTime > start && round.endTime < end)
+      return res
+        .status(401)
+        .send({ error: "end time falls within previously created round" });
+    if (start > round.startTime && start < round.endTime)
+      return res
+        .status(401)
+        .send({ error: "start time falls within previously created round" });
+    if (end > round.startTime && end < round.endTime)
+      return res
+        .status(401)
+        .send({ error: "start time falls within previously created round" });
+  }
   // return 401 if no signature attached
   // return 401 if signature's address not found in whitelist
   // execute post request
@@ -25,20 +46,16 @@ function simpleAuth(req, res, next) {
   }
 
   const body = req.body;
-  console.log(body);
-  if (!body.signedMessage) {
-    res.status(401).send({ error: "no message included" });
+  if (!body.message || !body.signature) {
+    res.status(401).send({ error: "no message or signature included" });
     return;
   } else {
-    const address = ethers.utils.verifyMessage(
-      body.signedMessage,
-      body.signedMessage
-    );
-    var obj = JSON.parse(fs.readFileSync("db.json", "utf8"));
+    const address = ethers.utils.verifyMessage(body.message, body.signature);
     const found = !!obj.whitelist.find((item) => item.address == address);
-    // if (!found)
-    //   res.status(401).send({ error: "message signer not authorized" });
-    delete req.body.signedMessage;
+    if (!found)
+      res.status(401).send({ error: "message signer not authorized" });
+    delete req.body.message;
+    delete req.body.signature;
     next();
   }
 }

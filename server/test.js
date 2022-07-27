@@ -1,5 +1,15 @@
 import axios from "axios";
+import dotenv from "dotenv";
 
+import { ethers } from "ethers";
+dotenv.config();
+console.log(process.env.PRIVATE_KEY);
+
+const provider = new ethers.providers.EtherscanProvider();
+const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+console.log("signer: ", signer);
+const message = `Adding new Grand Prix Round as ${process.env.PUBLIC_KEY}`;
+const signature = await signer.signMessage(message);
 // await axios
 //   .get("http://localhost:3000/rounds", {
 //     params: {
@@ -19,12 +29,14 @@ import axios from "axios";
 
 await axios
   .post("http://localhost:3000/rounds", {
-    signedMessage: "hello its me",
+    message,
+    signature,
     timeScoreWeight: 131,
     moveScoreWeight: 121,
     winner: "me",
     startTime: 10,
     endTime: 1,
+    configHash: "0x00",
   })
   .then(function (res) {
     console.log(res.data);
