@@ -41,7 +41,7 @@ function App() {
     DEFAULT_SCORING_CONFIG
   );
   const { address, isConnected } = useAccount();
-  const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
+  const { data, isError, isSuccess, signMessage } = useSignMessage({
     message: `Adding new Grand Prix Round as ${address}`,
   });
   const [validationError, setValidationError] =
@@ -190,7 +190,7 @@ function App() {
             </span>
           )}
         </FormItem>
-        {validationError !== "none" && (
+        {validationError !== "none" && isConnected && (
           <ErrorBanner>
             {validationError === "configHashRequired" && (
               <span>Config hash is required.</span>
