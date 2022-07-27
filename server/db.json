@@ -1,12 +1,20 @@
 {
-    "rounds": [
-        {
-            "configHash": 1,
-            "timeScoreWeight": 1,
-            "moveScoreWeight": 1,
-            "winner": "",
-            "startTime": 0,
-            "endTime": 0
-        }
-    ]
+  "rounds": [
+    {
+      "id": 2,
+      "timeScoreWeight": 1,
+      "moveScoreWeight": 1,
+      "winner": "",
+      "startTime": 0,
+      "endTime": 0
+    }
+  ],
+  "whitelist": [
+    {
+      "id": 0
+    },
+    {
+      "id": 1
+    }
+  ]
 }
