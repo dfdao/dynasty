@@ -1,0 +1,12 @@
+{
+    "rounds": [
+        {
+            "configHash": 1,
+            "timeScoreWeight": 1,
+            "moveScoreWeight": 1,
+            "winner": "",
+            "startTime": 0,
+            "endTime": 0
+        }
+    ]
+}
