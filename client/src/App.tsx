@@ -35,6 +35,7 @@ type ValidationErrorType =
   | "configHashInvalid"
   | "configHashNotFound"
   | "startTimeAfterEndTime"
+  | "timeOverlaps"
   | "none";
 
 function App() {
@@ -89,7 +90,16 @@ function App() {
       mutate("http://localhost:3000/rounds", async () => {
         await fetch("http://localhost:3000/rounds", {
           method: "POST",
-          body: JSON.stringify({ message: data }),
+          body: JSON.stringify({
+            signature: data,
+            message: `Adding new Grand Prix Round as ${address}`,
+            timeScoreWeight: currentConfig.timeScoreWeight,
+            moveScoreWeight: currentConfig.moveScoreWeight,
+            startTime: currentConfig.startTime,
+            endTime: currentConfig.endTime,
+            winner: currentConfig.winner,
+            configHash: currentConfig.configHash,
+          }),
         });
       });
     }
@@ -210,6 +220,9 @@ function App() {
             )}
             {validationError === "configHashNotFound" && (
               <span>Config doesn't exist onchain.</span>
+            )}
+            {validationError === "timeOverlaps" && (
+              <span>Round time overlaps with existing round.</span>
             )}
           </ErrorBanner>
         )}

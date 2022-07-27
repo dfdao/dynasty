@@ -70,12 +70,7 @@ export const RoundList = () => {
             <TableCell>{round.timeScoreWeight}</TableCell>
             <TableCell>{round.moveScoreWeight}</TableCell>
             <TableCell>
-              <button
-                onClick={() => {
-                  signMessage();
-                }}
-                disabled={!isConnected}
-              >
+              <button onClick={() => signMessage()} disabled={!isConnected}>
                 Delete
               </button>
             </TableCell>
