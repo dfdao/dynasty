@@ -6,6 +6,8 @@ import { ethers } from "ethers";
 import { formatStartTime, formatDate } from "../lib/date";
 import { ScoringInterface } from "../App";
 import { useAccount, useSignMessage } from "wagmi";
+import useSWR from "swr";
+import { fetcher } from "../lib/fetcher";
 
 let mockDate = new Date();
 
@@ -41,6 +43,12 @@ export const RoundList = () => {
   const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
     message: `Deleting Grand Prix Round as ${address}`,
   });
+  const { data: serverData, error } = useSWR(
+    "http://localhost:3000/rounds",
+    fetcher
+  );
+  if (!serverData) return <div>Loading...</div>;
+  if (error) return <div>Couldn't load previous rounds.</div>;
 
   return (
     <RoundsContainer>
@@ -54,7 +62,7 @@ export const RoundList = () => {
         </tr>
       </thead>
       <tbody>
-        {MOCK_ROUNDS.map((round) => (
+        {serverData.map((round: ScoringInterface) => (
           <RoundItem>
             <TableCell>{getConfigName(round.configHash)}</TableCell>
             <TableCell>{formatStartTime(round.startTime)}</TableCell>

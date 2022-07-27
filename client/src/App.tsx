@@ -10,6 +10,7 @@ import { ethers } from "ethers";
 import { formatStartTime, formatDate } from "./lib/date";
 import { RoundList } from "./components/RoundsList";
 import { getConfigsFromGraph } from "./lib/graphql";
+import { useSWRConfig } from "swr";
 
 export interface ScoringInterface {
   configHash: string;
@@ -37,6 +38,7 @@ type ValidationErrorType =
   | "none";
 
 function App() {
+  const { mutate } = useSWRConfig();
   const [currentConfig, setCurrentConfig] = useState<ScoringInterface>(
     DEFAULT_SCORING_CONFIG
   );
@@ -81,6 +83,17 @@ function App() {
   useEffect(() => {
     validateInput(currentConfig);
   }, [currentConfig]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      mutate("http://localhost:3000/rounds", async () => {
+        await fetch("http://localhost:3000/rounds", {
+          method: "POST",
+          body: JSON.stringify({ message: data }),
+        });
+      });
+    }
+  }, [isSuccess]);
 
   return (
     <Container>
@@ -173,13 +186,7 @@ function App() {
         <FormItem>
           <button
             disabled={!isConnected || validationError !== "none"}
-            onClick={() => {
-              const signed = signMessage();
-              if (isSuccess) {
-                console.log(signed);
-                console.log(currentConfig);
-              }
-            }}
+            onClick={() => signMessage()}
           >
             Submit new round
           </button>
