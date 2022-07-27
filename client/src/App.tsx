@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import styled from "styled-components";
 import DateTimePicker from "react-datetime-picker";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
+import { ethers } from "ethers";
 
 interface ScoringInterface {
   configHash: string;
@@ -24,18 +25,46 @@ const DEFAULT_SCORING_CONFIG: ScoringInterface = {
   endTime: new Date().getTime(),
 };
 
-type AuthStatus = "authenticated" | "unauthenticated" | "loading";
+type ValidationErrorType =
+  | "configHashRequired"
+  | "configHashInvalid"
+  | "startTimeAfterEndTime"
+  | "none";
 
 function App() {
   const [currentConfig, setCurrentConfig] = useState<ScoringInterface>(
     DEFAULT_SCORING_CONFIG
   );
   const { address, isConnected } = useAccount();
-  const [selectedFile, setSelectedFile] = useState();
+  const [signedMessage, setSignedMessage] = useState<string>("");
+  const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
+    message: `Adding new Grand Prix Round as ${address}`,
+  });
+  const [validationError, setValidationError] =
+    useState<ValidationErrorType>("none");
 
-  const changeHandler = (event: any) => {
-    setSelectedFile(event.target.files[0]);
-  };
+  useEffect(() => {
+    if (data) {
+      setSignedMessage(data);
+    }
+  }, [data]);
+
+  function validateInput(input: ScoringInterface): ValidationErrorType {
+    if (input.configHash.length === 0) {
+      setValidationError("configHashRequired");
+      return "configHashRequired";
+    }
+    if (!input.configHash.startsWith("0x")) {
+      setValidationError("configHashInvalid");
+      return "configHashInvalid";
+    }
+    if (input.startTime >= input.endTime) {
+      setValidationError("startTimeAfterEndTime");
+      return "startTimeAfterEndTime";
+    }
+    setValidationError("none");
+    return "none";
+  }
 
   return (
     <Container>
@@ -52,25 +81,29 @@ function App() {
             <GreenFormulaInput
               placeholder="timeScoreWeight"
               onChange={(e) => {
-                setCurrentConfig({
+                const newConfig = {
                   ...currentConfig,
                   timeScoreWeight: Number(e.target.value),
-                });
+                };
+                setCurrentConfig(newConfig);
+                validateInput(newConfig);
               }}
               type="number"
             />
-            <span>* playerTime * (1 + (</span>
+            <span>× playerTime × (1 + (</span>
             <BlueFormulaInput
               placeholder="moveScoreWeight"
               onChange={(e) => {
-                setCurrentConfig({
+                const newConfig = {
                   ...currentConfig,
                   moveScoreWeight: Number(e.target.value),
-                });
+                };
+                setCurrentConfig(newConfig);
+                validateInput(newConfig);
               }}
               type="number"
             />
-            <span> * playerMoves) / 1000)</span>
+            <span> × playerMoves) ÷ 1000)</span>
           </FormulaContainer>
         </FormItem>
         <div
@@ -84,40 +117,62 @@ function App() {
           <FormItem>
             <Label>Start Time</Label>
             <DateTimePicker
-              onChange={(date: Date) =>
-                setCurrentConfig({
+              onChange={(date: Date) => {
+                const newConfig = {
                   ...currentConfig,
-                  startTime: date.getUTCMilliseconds(),
-                })
-              }
+                  startTime: date.getTime(),
+                };
+                setCurrentConfig(newConfig);
+                validateInput(newConfig);
+              }}
               value={new Date(currentConfig.startTime)}
             />
           </FormItem>
           <FormItem>
             <Label>End Time</Label>
             <DateTimePicker
-              onChange={(date: Date) =>
-                setCurrentConfig({
+              onChange={(date: Date) => {
+                const newConfig = {
                   ...currentConfig,
-                  endTime: date.getUTCMilliseconds(),
-                })
-              }
+                  endTime: date.getTime(),
+                };
+                setCurrentConfig(newConfig);
+                validateInput(newConfig);
+              }}
               value={new Date(currentConfig.endTime)}
             />
           </FormItem>
         </div>
         <Label>Dates are in your current time zone.</Label>
         <FormItem>
-          <Label>Upload Config (JSON)</Label>
-          <FileInput
-            type="file"
-            accept="application/JSON"
-            name="file"
-            onChange={changeHandler}
+          <Label>Config Hash</Label>
+          <input
+            type="text"
+            value={currentConfig.configHash}
+            onChange={(e) => {
+              const newConfig = {
+                ...currentConfig,
+                configHash: e.target.value,
+              };
+              setCurrentConfig(newConfig);
+              validateInput(newConfig);
+            }}
+            placeholder="0x..."
           />
         </FormItem>
         <FormItem>
-          <button disabled={!isConnected}>Submit new round</button>
+          <button
+            disabled={!isConnected && !isLoading}
+            onClick={() => {
+              const signed = signMessage();
+              if (isSuccess) {
+                console.log(signed);
+                console.log(currentConfig);
+              }
+            }}
+          >
+            Submit new round
+          </button>
           {!isConnected && (
             <span>
               Connect wallet. Only an authenticated community admin can
@@ -125,10 +180,31 @@ function App() {
             </span>
           )}
         </FormItem>
+        {validationError !== "none" && (
+          <ErrorBanner>
+            {validationError === "configHashRequired" && (
+              <span>Config hash is required.</span>
+            )}
+            {validationError === "configHashInvalid" && (
+              <span>Config hash must start with '0x'.</span>
+            )}
+            {validationError === "startTimeAfterEndTime" && (
+              <span>Start time must be before end time.</span>
+            )}
+          </ErrorBanner>
+        )}
       </Form>
     </Container>
   );
 }
+
+const ErrorBanner = styled.div`
+  display: flex;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  background: #ffc46b;
+  color: #a05419;
+`;
 
 const Container = styled.div`
   display: flex;
