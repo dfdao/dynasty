@@ -5,9 +5,13 @@ import DateTimePicker from "react-datetime-picker";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useSignMessage } from "wagmi";
+import { getConfigName } from "./lib/getConfigName";
 import { ethers } from "ethers";
+import { formatStartTime, formatDate } from "./lib/date";
+import { RoundList } from "./components/RoundsList";
+import { getConfigsFromGraph } from "./lib/graphql";
 
-interface ScoringInterface {
+export interface ScoringInterface {
   configHash: string;
   timeScoreWeight: number;
   moveScoreWeight: number;
@@ -28,6 +32,7 @@ const DEFAULT_SCORING_CONFIG: ScoringInterface = {
 type ValidationErrorType =
   | "configHashRequired"
   | "configHashInvalid"
+  | "configHashNotFound"
   | "startTimeAfterEndTime"
   | "none";
 
@@ -36,7 +41,6 @@ function App() {
     DEFAULT_SCORING_CONFIG
   );
   const { address, isConnected } = useAccount();
-  const [signedMessage, setSignedMessage] = useState<string>("");
   const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
     message: `Adding new Grand Prix Round as ${address}`,
   });
@@ -44,10 +48,18 @@ function App() {
     useState<ValidationErrorType>("none");
 
   useEffect(() => {
-    if (data) {
-      setSignedMessage(data);
+    {
+      async function graphQuery(configHash: string) {
+        let x = await getConfigsFromGraph(configHash);
+        if (!x.data) setValidationError("configHashNotFound");
+        if (x.data?.arenas.length === 0)
+          setValidationError("configHashNotFound");
+      }
+      if (currentConfig.configHash.length > 0) {
+        graphQuery(currentConfig.configHash);
+      }
     }
-  }, [data]);
+  }, [currentConfig]);
 
   function validateInput(input: ScoringInterface): ValidationErrorType {
     if (input.configHash.length === 0) {
@@ -66,14 +78,17 @@ function App() {
     return "none";
   }
 
+  useEffect(() => {
+    validateInput(currentConfig);
+  }, [currentConfig]);
+
   return (
     <Container>
       <Nav>
         <Title>Dynasty Admin</Title>
-
         <ConnectButton />
       </Nav>
-      <Title style={{ marginBottom: "1rem" }}>Create new Round</Title>
+      <Title>Create new Round</Title>
       <Form>
         <FormItem>
           <Label>Scoring Formula</Label>
@@ -86,7 +101,6 @@ function App() {
                   timeScoreWeight: Number(e.target.value),
                 };
                 setCurrentConfig(newConfig);
-                validateInput(newConfig);
               }}
               type="number"
             />
@@ -99,7 +113,6 @@ function App() {
                   moveScoreWeight: Number(e.target.value),
                 };
                 setCurrentConfig(newConfig);
-                validateInput(newConfig);
               }}
               type="number"
             />
@@ -123,7 +136,6 @@ function App() {
                   startTime: date.getTime(),
                 };
                 setCurrentConfig(newConfig);
-                validateInput(newConfig);
               }}
               value={new Date(currentConfig.startTime)}
             />
@@ -137,7 +149,6 @@ function App() {
                   endTime: date.getTime(),
                 };
                 setCurrentConfig(newConfig);
-                validateInput(newConfig);
               }}
               value={new Date(currentConfig.endTime)}
             />
@@ -155,14 +166,13 @@ function App() {
                 configHash: e.target.value,
               };
               setCurrentConfig(newConfig);
-              validateInput(newConfig);
             }}
             placeholder="0x..."
           />
         </FormItem>
         <FormItem>
           <button
-            disabled={!isConnected && !isLoading}
+            disabled={!isConnected || validationError !== "none"}
             onClick={() => {
               const signed = signMessage();
               if (isSuccess) {
@@ -191,9 +201,14 @@ function App() {
             {validationError === "startTimeAfterEndTime" && (
               <span>Start time must be before end time.</span>
             )}
+            {validationError === "configHashNotFound" && (
+              <span>Config doesn't exist onchain.</span>
+            )}
           </ErrorBanner>
         )}
       </Form>
+      <Title>All rounds</Title>
+      <RoundList />
     </Container>
   );
 }
@@ -270,6 +285,8 @@ const Title = styled.span`
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 `;
 
 const Nav = styled.div`
