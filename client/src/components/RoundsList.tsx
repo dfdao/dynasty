@@ -47,6 +47,7 @@ export const RoundList = () => {
     "http://localhost:3000/rounds",
     fetcher
   );
+  console.log(serverData);
   if (!serverData) return <div>Loading...</div>;
   if (error) return <div>Couldn't load previous rounds.</div>;
 
@@ -62,7 +63,7 @@ export const RoundList = () => {
         </tr>
       </thead>
       <tbody>
-        {serverData.map((round: ScoringInterface) => (
+        {serverData.body.map((round: ScoringInterface) => (
           <RoundItem>
             <TableCell>{getConfigName(round.configHash)}</TableCell>
             <TableCell>{formatStartTime(round.startTime)}</TableCell>

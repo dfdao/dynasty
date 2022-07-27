@@ -5,31 +5,33 @@ import fs from "fs";
 var server = create();
 var router = _router("db.json");
 import bodyParser from "body-parser";
+import cors from "cors";
 var middlewares = defaults();
 
 function simpleAuth(req, res, next) {
   console.log("hello!");
+  console.log(req);
   console.log("req", req.body);
   // if not post, delete, patch, or put request execute post request
   const obj = JSON.parse(fs.readFileSync("db.json", "utf8"));
-  for (round in obj.rounds) {
+  for (const round in obj.rounds) {
     const start = req.body.startTime;
     const end = req.body.endTime;
     if (round.startTime > start && round.startTime < end)
       return res
-        .status(401)
+        .status(400)
         .send({ error: "start time falls within previously created round" });
     if (round.endTime > start && round.endTime < end)
       return res
-        .status(401)
+        .status(400)
         .send({ error: "end time falls within previously created round" });
     if (start > round.startTime && start < round.endTime)
       return res
-        .status(401)
+        .status(400)
         .send({ error: "start time falls within previously created round" });
     if (end > round.startTime && end < round.endTime)
       return res
-        .status(401)
+        .status(400)
         .send({ error: "start time falls within previously created round" });
   }
   // return 401 if no signature attached
@@ -74,6 +76,16 @@ router.render = function (req, res) {
 
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
+
+server.use(
+  cors({
+    origin: true,
+    credentials: true,
+    preflightContinue: false,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  })
+);
+server.options("*", cors());
 
 // before proceeding with any request, run `simpleAuth` function
 // which should check for basic authentication header .. etc

@@ -8,9 +8,9 @@ import { useAccount, useSignMessage } from "wagmi";
 import { getConfigName } from "./lib/getConfigName";
 import { ethers } from "ethers";
 import { formatStartTime, formatDate } from "./lib/date";
-import { RoundList } from "./components/RoundsList";
-import { getConfigsFromGraph } from "./lib/graphql";
 import { useSWRConfig } from "swr";
+import { getConfigsFromGraph } from "./lib/graphql";
+import { RoundList } from "./components/RoundsList";
 
 export interface ScoringInterface {
   configHash: string;
@@ -87,9 +87,21 @@ function App() {
 
   useEffect(() => {
     if (isSuccess) {
+      console.log("signed!");
       mutate("http://localhost:3000/rounds", async () => {
+        console.log({
+          signature: data,
+          message: `Adding new Grand Prix Round as ${address}`,
+          timeScoreWeight: currentConfig.timeScoreWeight,
+          moveScoreWeight: currentConfig.moveScoreWeight,
+          configHash: currentConfig.configHash,
+          startTime: currentConfig.startTime,
+          endTime: currentConfig.endTime,
+          winner: currentConfig.winner,
+        });
         await fetch("http://localhost:3000/rounds", {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             signature: data,
             message: `Adding new Grand Prix Round as ${address}`,
