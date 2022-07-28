@@ -22,7 +22,7 @@ function simpleAuth(req, res, next) {
   if (sameStartAndEnd.length > 0) {
     return res
       .status(400)
-      .end("round with same start and end times already exists");
+      .send("Round with same start and end times already exists");
   }
 
   const roundTimesOverlap = obj.rounds.filter((round) => {
@@ -33,7 +33,7 @@ function simpleAuth(req, res, next) {
   });
 
   if (roundTimesOverlap.length > 0) {
-    return res.status(400).end("round times overlap with existing round");
+    return res.status(400).send("Round times overlap with existing round");
   }
 
   // return 401 if no signature attached
@@ -51,12 +51,11 @@ function simpleAuth(req, res, next) {
 
   const body = req.body;
   if (!body.message || !body.signature) {
-    return res.status(401).end({ error: "no message or signature included" });
+    return res.status(401).send("No message or signature included");
   } else {
     const address = ethers.utils.verifyMessage(body.message, body.signature);
     const found = !!obj.whitelist.find((item) => item.address == address);
-    if (!found)
-      return res.status(401).end({ error: "message signer not authorized" });
+    if (!found) return res.status(401).send("Signer not authorized");
     delete req.body.message;
     delete req.body.signature;
     next();

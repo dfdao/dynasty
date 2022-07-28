@@ -7,10 +7,15 @@ import { useAccount, useSignMessage } from "wagmi";
 import useSWR, { useSWRConfig } from "swr";
 import { fetcher } from "../lib/network";
 import { getDeleteRoundMessage } from "../constants";
+import { useState } from "react";
+import { ErrorBanner } from "./ErrorBanner";
 
 export const RoundList = () => {
   const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
+  const [submissionError, setSubmissionError] = useState<string | undefined>(
+    undefined
+  );
   const { signMessageAsync } = useSignMessage({
     message: getDeleteRoundMessage(address),
   });
@@ -23,6 +28,11 @@ export const RoundList = () => {
 
   return (
     <RoundsContainer>
+      {submissionError && (
+        <ErrorBanner>
+          <span>{submissionError}</span>
+        </ErrorBanner>
+      )}
       <thead>
         <tr>
           <TableHeader>Name</TableHeader>
@@ -43,6 +53,7 @@ export const RoundList = () => {
             <TableCell>
               <button
                 onClick={async () => {
+                  if (submissionError) setSubmissionError(undefined);
                   // get selected round
                   let params = new URLSearchParams({
                     endTime: round.endTime.toString(),
@@ -75,7 +86,10 @@ export const RoundList = () => {
                           }),
                         }
                       );
-                      console.log(res);
+                      const responseError = await res.text();
+                      if (res.status !== 200 && res.status !== 201) {
+                        setSubmissionError(responseError);
+                      }
                     }
                   );
                 }}

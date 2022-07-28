@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, useField, useFormik, useFormikContext } from "formik";
 import { DEFAULT_SCORING_CONFIG, getAddRoundMessage } from "../constants";
 import styled from "styled-components";
@@ -6,6 +6,7 @@ import DateTimePicker from "react-datetime-picker";
 import { useAccount, useSignMessage } from "wagmi";
 import { useSWRConfig } from "swr";
 import { configHashGraphQuery } from "../lib/graphql";
+import { ErrorBanner } from "./ErrorBanner";
 
 export const DateTimeField = ({ ...props }: any) => {
   const { setFieldValue } = useFormikContext();
@@ -27,10 +28,14 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
   const { signMessageAsync } = useSignMessage({
     message: getAddRoundMessage(address),
   });
+  const [submissionError, setSubmissionError] = useState<string | undefined>(
+    undefined
+  );
   return (
     <Formik
       initialValues={DEFAULT_SCORING_CONFIG}
       onSubmit={async (values) => {
+        if (submissionError) setSubmissionError(undefined);
         const signedMessage = await signMessageAsync();
         mutate(`http://localhost:3000/rounds`, async () => {
           const res = await fetch(`http://localhost:3000/rounds`, {
@@ -47,7 +52,11 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
               configHash: values.configHash,
             }),
           });
+          const responseError = await res.text();
           console.log(res);
+          if (res.status !== 200 && res.status !== 201) {
+            setSubmissionError(responseError);
+          }
         });
       }}
       validate={async (values) => {
@@ -148,6 +157,11 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
                 ))}
               </ErrorBanner>
             )}
+            {submissionError && isConnected && (
+              <ErrorBanner>
+                <span>🚫 {submissionError}</span>
+              </ErrorBanner>
+            )}
             {!isConnected && (
               <span>
                 Connect wallet. Only an authenticated community admin can
@@ -228,16 +242,6 @@ const Form = styled.form`
   padding: 1rem;
   align-items: center;
   justify-content: center;
-`;
-
-const ErrorBanner = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  background: #ffc46b;
-  color: #a05419;
 `;
 
 const Picker = styled(DateTimePicker)`

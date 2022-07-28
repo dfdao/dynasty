@@ -10,6 +10,14 @@
       "endTime": 1,
       "id": 1,
       "configHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "timeScoreWeight": 1,
+      "moveScoreWeight": 1,
+      "startTime": 1659210615940,
+      "endTime": 1659297015940,
+      "configHash": "0x568297442f966cc66f2be7ced683e35ea2ca1e68b4f26dd5424158244da40bcc",
+      "id": 3
     }
   ],
   "whitelist": [
