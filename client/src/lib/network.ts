@@ -9,6 +9,18 @@ export const fetcher = (...args: any) =>
   // @ts-ignore
   fetch(...args).then((res) => res.json());
 
+export const getRoundDiff = (oldRound: any, newRound: any) => {
+  // iterate over all keys in the new round
+  const diff: any = {};
+  Object.keys(newRound).forEach((key: string) => {
+    if (oldRound[key] !== newRound[key]) {
+      // if the key is in the old round and the value is different, add it to the diff
+      diff[key] = newRound[key];
+    }
+  });
+  return diff;
+};
+
 export const getURLSearchParmsForRound = (
   round: ScoringInterface
 ): URLSearchParams => {
@@ -74,17 +86,20 @@ export const addRound = async (
 
 export const editRound = async (
   newRound: ScoringInterface,
-  roundId: number,
+  oldRound: ScoringInterface,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
+  const roundId = await getRoundID(oldRound);
   const params = getURLSearchParmsForRound(newRound);
-  const res = await fetch(`http://localhost:3000/rounds/${roundId}?${params}`, {
-    method: "PUT",
+  const roundDiff = getRoundDiff(oldRound, newRound);
+  const res = await fetch(`http://localhost:3000/rounds/${roundId}`, {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message: getEditRoundMessage(address),
       signature: signature,
+      ...roundDiff,
     }),
   });
   return res;

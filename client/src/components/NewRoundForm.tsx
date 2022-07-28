@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Formik, useField, useFormik, useFormikContext } from "formik";
-import { DEFAULT_SCORING_CONFIG, getAddRoundMessage } from "../constants";
+import {
+  DEFAULT_SCORING_CONFIG,
+  getAddRoundMessage,
+  getEditRoundMessage,
+} from "../constants";
 import styled from "styled-components";
 import DateTimePicker from "react-datetime-picker";
 import { useAccount, useSignMessage } from "wagmi";
 import { useSWRConfig } from "swr";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
-import { addRound } from "../lib/network";
+import { addRound, editRound } from "../lib/network";
+import { ScoringInterface } from "../types";
 
 export const DateTimeField = ({ ...props }: any) => {
   const { setFieldValue } = useFormikContext();
@@ -23,25 +28,43 @@ export const DateTimeField = ({ ...props }: any) => {
   );
 };
 
-export const NewRoundForm: React.FC<{}> = ({}) => {
+export const NewRoundForm: React.FC<{
+  editCurrentRound?: ScoringInterface;
+}> = ({ editCurrentRound }) => {
   const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage({
-    message: getAddRoundMessage(address),
+    message: editCurrentRound
+      ? getEditRoundMessage(address)
+      : getAddRoundMessage(address),
   });
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
   );
+
+  const oldRound = useMemo(() => {
+    if (editCurrentRound) {
+      return editCurrentRound;
+    }
+  }, []);
+
   return (
     <Formik
-      initialValues={DEFAULT_SCORING_CONFIG}
+      initialValues={editCurrentRound ?? DEFAULT_SCORING_CONFIG}
       onSubmit={async (values) => {
         if (submissionError) setSubmissionError(undefined);
         const signedMessage = await signMessageAsync();
         mutate(`http://localhost:3000/rounds`, async () => {
-          const res = await addRound(values, address, signedMessage);
+          let res: Response;
+          if (editCurrentRound) {
+            if (!oldRound) return;
+            res = await editRound(values, oldRound, address, signedMessage);
+          } else {
+            res = await addRound(values, address, signedMessage);
+          }
           const responseError = await res.text();
           console.log(res);
+          console.log(responseError);
           if (res.status !== 200 && res.status !== 201) {
             setSubmissionError(responseError);
           }
@@ -131,12 +154,25 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
               placeholder="0x..."
             />
           </FormItem>
+          {editCurrentRound && (
+            <FormItem>
+              <Label>Winner</Label>
+              <TextInput
+                type="text"
+                id="winner"
+                name="winner"
+                value={formik.values.winner}
+                onChange={formik.handleChange}
+                placeholder="0x..."
+              />
+            </FormItem>
+          )}
           <FormItem>
             <button
               disabled={!isConnected || Object.keys(formik.errors).length > 0}
               type="submit"
             >
-              Submit new round
+              {editCurrentRound ? "Edit Round" : "Submit new round"}
             </button>
             {Object.keys(formik.errors).length > 0 && isConnected && (
               <ErrorBanner>

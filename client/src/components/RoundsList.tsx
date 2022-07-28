@@ -10,7 +10,9 @@ import { getDeleteRoundMessage } from "../constants";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
 
-export const RoundList = () => {
+export const RoundList: React.FC<{
+  onEditRound: (round: ScoringInterface) => void;
+}> = ({ onEditRound }) => {
   const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
   const [submissionError, setSubmissionError] = useState<string | undefined>(
@@ -52,11 +54,13 @@ export const RoundList = () => {
             <TableCell>{round.timeScoreWeight}</TableCell>
             <TableCell>{round.moveScoreWeight}</TableCell>
             <TableCell>
-              {round.winner && round.winner.length > 0 ? (
-                round.winner
-              ) : (
-                <MutedButton disabled={!isConnected}>Set Winner</MutedButton>
-              )}
+              {round.winner && round.winner.length > 0
+                ? round.winner
+                : // <MutedButton disabled={!isConnected}>Set Winner</MutedButton>
+                  "None"}
+            </TableCell>
+            <TableCell>
+              <MutedButton onClick={() => onEditRound(round)}>Edit</MutedButton>
             </TableCell>
             <TableCell>
               <button
@@ -114,6 +118,7 @@ const MutedButton = styled.button`
   background: #61c6ff;
   border: none;
   color: #0f5a9f;
+  border: 2px solid rgba(15, 90, 159);
   &:disabled {
     background: rgba(97, 198, 255, 0.4);
     border-color: rgba(15, 90, 159, 0.4);
