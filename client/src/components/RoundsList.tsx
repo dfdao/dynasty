@@ -1,53 +1,23 @@
-import { useEffect, useState } from "react";
 import "../App.css";
 import styled from "styled-components";
 import { getConfigName } from "../lib/getConfigName";
-import { ethers } from "ethers";
-import { formatStartTime, formatDate } from "../lib/date";
-import { ScoringInterface } from "../App";
+import { formatStartTime } from "../lib/date";
+import { ScoringInterface } from "../types";
 import { useAccount, useSignMessage } from "wagmi";
-import useSWR from "swr";
-import { fetcher } from "../lib/fetcher";
-
-let mockDate = new Date();
-
-const MOCK_ROUNDS: ScoringInterface[] = [
-  {
-    configHash: "0x0000000000000000000000000000000000000001",
-    timeScoreWeight: 11,
-    moveScoreWeight: 121,
-    winner: undefined,
-    startTime: mockDate.getTime(),
-    endTime: new Date().getTime(),
-  },
-  {
-    configHash: "0xab00000000000001234564132434145241254341",
-    timeScoreWeight: 111,
-    moveScoreWeight: 12,
-    winner: undefined,
-    startTime: new Date().getTime(),
-    endTime: new Date().getTime(),
-  },
-  {
-    configHash: "0x0000000000000000000000000000000000000003",
-    timeScoreWeight: 1,
-    moveScoreWeight: 1231,
-    winner: undefined,
-    startTime: new Date().getTime(),
-    endTime: new Date().getTime(),
-  },
-];
+import useSWR, { useSWRConfig } from "swr";
+import { fetcher } from "../lib/network";
+import { getDeleteRoundMessage } from "../constants";
 
 export const RoundList = () => {
+  const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
-  const { data, isError, isLoading, isSuccess, signMessage } = useSignMessage({
-    message: `Deleting Grand Prix Round as ${address}`,
+  const { signMessageAsync } = useSignMessage({
+    message: getDeleteRoundMessage(address),
   });
   const { data: serverData, error } = useSWR(
     "http://localhost:3000/rounds",
     fetcher
   );
-  console.log(serverData);
   if (!serverData) return <div>Loading...</div>;
   if (error) return <div>Couldn't load previous rounds.</div>;
 
@@ -71,7 +41,46 @@ export const RoundList = () => {
             <TableCell>{round.timeScoreWeight}</TableCell>
             <TableCell>{round.moveScoreWeight}</TableCell>
             <TableCell>
-              <button onClick={() => signMessage()} disabled={!isConnected}>
+              <button
+                onClick={async () => {
+                  // get selected round
+                  let params = new URLSearchParams({
+                    endTime: round.endTime.toString(),
+                    startTime: round.startTime.toString(),
+                    timeScoreWeight: round.timeScoreWeight.toString(),
+                    moveScoreWeight: round.moveScoreWeight.toString(),
+                    configHash: round.configHash.toString(),
+                  });
+                  let selectedRoundID = await fetch(
+                    `http://localhost:3000/rounds?${params}`,
+                    {
+                      method: "GET",
+                      headers: { "Content-Type": "application/json" },
+                    }
+                  );
+                  const fetchedText = await selectedRoundID.text();
+                  const fetchedId = JSON.parse(fetchedText).body[0].id;
+                  const signed = await signMessageAsync();
+                  mutate(
+                    `http://localhost:3000/rounds/${fetchedId}`,
+                    async () => {
+                      const res = await fetch(
+                        `http://localhost:3000/rounds/${fetchedId}`,
+                        {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            message: getDeleteRoundMessage(address),
+                            signature: signed,
+                          }),
+                        }
+                      );
+                      console.log(res);
+                    }
+                  );
+                }}
+                disabled={!isConnected}
+              >
                 Delete
               </button>
             </TableCell>

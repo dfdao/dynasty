@@ -10,12 +10,11 @@
   },
   "dependencies": {
     "@darkforest_eth/hashing": "^6.7.29",
-    "@darkforest_eth/procedural": "^6.7.29",
     "@rainbow-me/rainbowkit": "^0.4.4",
     "ethers": "^5.6.9",
+    "formik": "^2.2.9",
     "graphql": "^16.5.0",
     "react": "^18.2.0",
-    "react-datepicker": "^4.8.0",
     "react-datetime-picker": "^3.5.0",
     "react-dom": "^18.2.0",
     "styled-components": "^5.3.5",
@@ -25,7 +24,6 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.15",
-    "@types/react-datepicker": "^4.4.2",
     "@types/react-datetime-picker": "^3.4.1",
     "@types/react-dom": "^18.0.6",
     "@types/styled-components": "^5.1.25",

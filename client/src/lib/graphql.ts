@@ -20,3 +20,9 @@ export const getConfigsFromGraph = async (configHash: string) => {
     `;
   return await client.query(configQuery).toPromise();
 };
+
+export async function configHashGraphQuery(configHash: string) {
+  let x = await getConfigsFromGraph(configHash);
+  if (!x.data) return "configHashNotFound";
+  if (x.data?.arenas.length === 0) return "configHashNotFound";
+}

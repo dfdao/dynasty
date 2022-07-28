@@ -9,31 +9,33 @@ import cors from "cors";
 var middlewares = defaults();
 
 function simpleAuth(req, res, next) {
-  console.log("hello!");
-  console.log(req);
   console.log("req", req.body);
   // if not post, delete, patch, or put request execute post request
   const obj = JSON.parse(fs.readFileSync("db.json", "utf8"));
-  for (const round in obj.rounds) {
-    const start = req.body.startTime;
-    const end = req.body.endTime;
-    if (round.startTime > start && round.startTime < end)
-      return res
-        .status(400)
-        .send({ error: "start time falls within previously created round" });
-    if (round.endTime > start && round.endTime < end)
-      return res
-        .status(400)
-        .send({ error: "end time falls within previously created round" });
-    if (start > round.startTime && start < round.endTime)
-      return res
-        .status(400)
-        .send({ error: "start time falls within previously created round" });
-    if (end > round.startTime && end < round.endTime)
-      return res
-        .status(400)
-        .send({ error: "start time falls within previously created round" });
+
+  const resRoundStart = req.body.startTime;
+  const resRoundEnd = req.body.endTime;
+
+  const sameStartAndEnd = obj.rounds.filter((round) => {
+    return round.startTime === resRoundStart && round.end === resRoundEnd;
+  });
+  if (sameStartAndEnd.length > 0) {
+    return res
+      .status(400)
+      .end("round with same start and end times already exists");
   }
+
+  const roundTimesOverlap = obj.rounds.filter((round) => {
+    return (
+      (resRoundStart >= round.startTime && resRoundStart <= round.endTime) ||
+      (resRoundEnd >= round.startTime && resRoundEnd <= round.endTime)
+    );
+  });
+
+  if (roundTimesOverlap.length > 0) {
+    return res.status(400).end("round times overlap with existing round");
+  }
+
   // return 401 if no signature attached
   // return 401 if signature's address not found in whitelist
   // execute post request
@@ -49,13 +51,12 @@ function simpleAuth(req, res, next) {
 
   const body = req.body;
   if (!body.message || !body.signature) {
-    res.status(401).send({ error: "no message or signature included" });
-    return;
+    return res.status(401).end({ error: "no message or signature included" });
   } else {
     const address = ethers.utils.verifyMessage(body.message, body.signature);
     const found = !!obj.whitelist.find((item) => item.address == address);
     if (!found)
-      res.status(401).send({ error: "message signer not authorized" });
+      return res.status(401).end({ error: "message signer not authorized" });
     delete req.body.message;
     delete req.body.signature;
     next();
