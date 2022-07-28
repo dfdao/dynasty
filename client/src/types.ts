@@ -2,7 +2,7 @@ export interface ScoringInterface {
   configHash: string;
   timeScoreWeight: number;
   moveScoreWeight: number;
-  winner: number | undefined;
+  winner: string | undefined;
   startTime: number;
   endTime: number;
 }

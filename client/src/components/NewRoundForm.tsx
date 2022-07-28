@@ -7,6 +7,7 @@ import { useAccount, useSignMessage } from "wagmi";
 import { useSWRConfig } from "swr";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
+import { addRound } from "../lib/network";
 
 export const DateTimeField = ({ ...props }: any) => {
   const { setFieldValue } = useFormikContext();
@@ -38,20 +39,7 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
         if (submissionError) setSubmissionError(undefined);
         const signedMessage = await signMessageAsync();
         mutate(`http://localhost:3000/rounds`, async () => {
-          const res = await fetch(`http://localhost:3000/rounds`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              signature: signedMessage,
-              message: getAddRoundMessage(address),
-              timeScoreWeight: values.timeScoreWeight,
-              moveScoreWeight: values.moveScoreWeight,
-              startTime: values.startTime,
-              endTime: values.endTime,
-              winner: values.winner,
-              configHash: values.configHash,
-            }),
-          });
+          const res = await addRound(values, address, signedMessage);
           const responseError = await res.text();
           console.log(res);
           if (res.status !== 200 && res.status !== 201) {
@@ -94,7 +82,7 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
           <FormItem>
             <Label>Scoring Formula</Label>
             <FormulaContainer>
-              <GreenFormulaInput
+              <FormulaInput
                 placeholder="timeScoreWeight"
                 id="timeScoreWeight"
                 name="timeScoreWeight"
@@ -103,7 +91,7 @@ export const NewRoundForm: React.FC<{}> = ({}) => {
                 value={formik.values.timeScoreWeight}
               />
               <span>× playerTime × (1 + (</span>
-              <BlueFormulaInput
+              <FormulaInput
                 placeholder="moveScoreWeight"
                 id="moveScoreWeight"
                 name="moveScoreWeight"
@@ -194,30 +182,10 @@ const TextInput = styled.input`
   }
 `;
 
-const FormulaInput = styled.input`
+const FormulaInput = styled(TextInput)`
   padding: 4px;
-  border-radius: 4px;
-  background: #1c1c1c;
   text-decoration: none;
   outline: none;
-  border: none;
-  background: #ccc;
-`;
-
-const GreenFormulaInput = styled(FormulaInput)`
-  background: rgba(64, 221, 155, 0.4);
-  color: #0b4e32;
-  ::-webkit-input-placeholder {
-    color: #0b4e32;
-  }
-`;
-
-const BlueFormulaInput = styled(FormulaInput)`
-  background: rgba(97, 198, 255, 0.4);
-  color: #0f5a9f;
-  ::-webkit-input-placeholder {
-    color: #0f5a9f;
-  }
 `;
 
 const Label = styled.label`

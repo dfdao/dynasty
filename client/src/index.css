@@ -52,7 +52,10 @@ button {
   background: #40DD9B;
   color: #0B4E32;
   border: 2px solid #0B4E32;
-  transition: border-color 0.25s;
+  transition: transform 0.25s ease;
+}
+button:hover {
+  transform: scale(1.03);
 }
 button:disabled {
   cursor: not-allowed;

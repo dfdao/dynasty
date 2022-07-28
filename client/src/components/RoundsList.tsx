@@ -5,7 +5,7 @@ import { formatStartTime } from "../lib/date";
 import { ScoringInterface } from "../types";
 import { useAccount, useSignMessage } from "wagmi";
 import useSWR, { useSWRConfig } from "swr";
-import { fetcher } from "../lib/network";
+import { deleteRound, fetcher, getRoundID } from "../lib/network";
 import { getDeleteRoundMessage } from "../constants";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
@@ -40,6 +40,7 @@ export const RoundList = () => {
           <TableHeader>End</TableHeader>
           <TableHeader>TimeWeight</TableHeader>
           <TableHeader>MoveWeight</TableHeader>
+          <TableHeader>Winner</TableHeader>
         </tr>
       </thead>
       <tbody>
@@ -51,41 +52,22 @@ export const RoundList = () => {
             <TableCell>{round.timeScoreWeight}</TableCell>
             <TableCell>{round.moveScoreWeight}</TableCell>
             <TableCell>
+              {round.winner && round.winner.length > 0 ? (
+                round.winner
+              ) : (
+                <MutedButton disabled={!isConnected}>Set Winner</MutedButton>
+              )}
+            </TableCell>
+            <TableCell>
               <button
                 onClick={async () => {
                   if (submissionError) setSubmissionError(undefined);
-                  // get selected round
-                  let params = new URLSearchParams({
-                    endTime: round.endTime.toString(),
-                    startTime: round.startTime.toString(),
-                    timeScoreWeight: round.timeScoreWeight.toString(),
-                    moveScoreWeight: round.moveScoreWeight.toString(),
-                    configHash: round.configHash.toString(),
-                  });
-                  let selectedRoundID = await fetch(
-                    `http://localhost:3000/rounds?${params}`,
-                    {
-                      method: "GET",
-                      headers: { "Content-Type": "application/json" },
-                    }
-                  );
-                  const fetchedText = await selectedRoundID.text();
-                  const fetchedId = JSON.parse(fetchedText).body[0].id;
+                  const roundId = await getRoundID(round);
                   const signed = await signMessageAsync();
                   mutate(
-                    `http://localhost:3000/rounds/${fetchedId}`,
+                    `http://localhost:3000/rounds/${roundId}`,
                     async () => {
-                      const res = await fetch(
-                        `http://localhost:3000/rounds/${fetchedId}`,
-                        {
-                          method: "DELETE",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            message: getDeleteRoundMessage(address),
-                            signature: signed,
-                          }),
-                        }
-                      );
+                      const res = await deleteRound(roundId, address, signed);
                       const responseError = await res.text();
                       if (res.status !== 200 && res.status !== 201) {
                         setSubmissionError(responseError);
@@ -126,4 +108,15 @@ const RoundItem = styled.tr`
 
 const TableCell = styled.td`
   padding: 8px 16px;
+`;
+
+const MutedButton = styled.button`
+  background: #61c6ff;
+  border: none;
+  color: #0f5a9f;
+  &:disabled {
+    background: rgba(97, 198, 255, 0.4);
+    border-color: rgba(15, 90, 159, 0.4);
+    color: rgba(15, 90, 159, 0.4);
+  }
 `;
