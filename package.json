@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/dfdao/dynasty#readme",
   "lint-staged": {
-    "*.[ts, tsx]": "eslint --cache --fix",
-    "*.[ts,tsx,css,md]": "prettier --write"
+    "*.{ts, tsx}": "eslint --cache --fix",
+    "*.{ts,tsx,css,md}": "prettier --write"
   },
   "dependencies": {
     "lint-staged": "^13.0.3"
