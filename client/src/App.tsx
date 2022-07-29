@@ -1,7 +1,7 @@
 import "./App.css";
 import styled from "styled-components";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { RoundList } from "./components/RoundsList";
+import { RoundList } from "./components/RoundList";
 import { NewRoundForm } from "./components/NewRoundForm";
 import Modal from "react-modal";
 import { useState } from "react";
@@ -45,7 +45,7 @@ function App() {
       />
 
       <Title>Manage Admins</Title>
-      <AdminManager onEditRound={() => {}} />
+      <AdminManager />
     </Container>
   );
 }

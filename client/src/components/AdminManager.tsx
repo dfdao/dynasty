@@ -1,26 +1,14 @@
 import "../App.css";
 import styled from "styled-components";
-import { getConfigName } from "../lib/getConfigName";
-import { formatStartTime } from "../lib/date";
-import { ScoringInterface } from "../types";
 import { useAccount, useSignMessage } from "wagmi";
 import useSWR, { useSWRConfig } from "swr";
-import {
-  addAdmin,
-  deleteAdmin,
-  deleteRound,
-  fetcher,
-  getAdminID,
-  getRoundID,
-} from "../lib/network";
+import { addAdmin, deleteAdmin, fetcher, getAdminID } from "../lib/network";
 import { getDeleteRoundMessage } from "../constants";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
 import { TextInput } from "./NewRoundForm";
 
-export const AdminManager: React.FC<{
-  onEditRound: (round: ScoringInterface) => void;
-}> = ({ onEditRound }) => {
+export const AdminManager: React.FC<{}> = () => {
   const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
   const [submissionError, setSubmissionError] = useState<string | undefined>(

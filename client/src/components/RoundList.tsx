@@ -54,10 +54,7 @@ export const RoundList: React.FC<{
             <TableCell>{round.timeScoreWeight}</TableCell>
             <TableCell>{round.moveScoreWeight}</TableCell>
             <TableCell>
-              {round.winner && round.winner.length > 0
-                ? round.winner
-                : // <MutedButton disabled={!isConnected}>Set Winner</MutedButton>
-                  "None"}
+              {round.winner && round.winner.length > 0 ? round.winner : "None"}
             </TableCell>
             <TableCell>
               <MutedButton onClick={() => onEditRound(round)}>Edit</MutedButton>
