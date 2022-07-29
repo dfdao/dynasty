@@ -18,10 +18,14 @@
   },
   "homepage": "https://github.com/dfdao/dynasty#readme",
   "lint-staged": {
-    "*.{ts, tsx}": "eslint --cache --fix",
-    "*.{ts,tsx,css,md}": "prettier --write"
+    "**/*.{ts, tsx}": "eslint --cache --fix",
+    "**/*.{ts,tsx,css,md}": "prettier --ignore-path .prettierignore --write"
   },
   "dependencies": {
     "lint-staged": "^13.0.3"
+  },
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1"
   }
 }
