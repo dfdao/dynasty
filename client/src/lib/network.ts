@@ -1,4 +1,5 @@
 import {
+  getAddAdminMessage,
   getAddRoundMessage,
   getDeleteAdminMessage,
   getDeleteRoundMessage,
@@ -6,9 +7,7 @@ import {
 } from "../constants";
 import { ScoringInterface } from "../types";
 
-export const fetcher = (...args: any) =>
-  // @ts-ignore
-  fetch(...args).then((res) => res.json());
+export const fetcher = (...args: any) => fetch(args).then((res) => res.json());
 
 export const getRoundDiff = (oldRound: any, newRound: any) => {
   // iterate over all keys in the new round
@@ -105,7 +104,7 @@ export const addAdmin = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       signature: signature,
-      message: getAddRoundMessage(signer),
+      message: getAddAdminMessage(signer),
       address: adminAddress,
     }),
   });

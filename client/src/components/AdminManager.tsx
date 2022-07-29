@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { useAccount, useSignMessage } from "wagmi";
 import useSWR, { useSWRConfig } from "swr";
 import { addAdmin, deleteAdmin, fetcher, getAdminID } from "../lib/network";
-import { getDeleteRoundMessage } from "../constants";
+import { getAddAdminMessage, getDeleteAdminMessage } from "../constants";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
 import { TextInput } from "./NewRoundForm";
 
-export const AdminManager: React.FC<{}> = () => {
+export const AdminManager: React.FC<Record<string, never>> = () => {
   const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
   const [submissionError, setSubmissionError] = useState<string | undefined>(
@@ -16,7 +16,10 @@ export const AdminManager: React.FC<{}> = () => {
   );
   const [newAdminAddress, setNewAdminAddress] = useState<string>("");
   const { signMessageAsync } = useSignMessage({
-    message: getDeleteRoundMessage(address),
+    message: getAddAdminMessage(address),
+  });
+  const { signMessageAsync: signDeleteAdminMessage } = useSignMessage({
+    message: getDeleteAdminMessage(address),
   });
   const { data: adminData, error } = useSWR(
     "http://localhost:3000/whitelist",
@@ -51,7 +54,7 @@ export const AdminManager: React.FC<{}> = () => {
                 onClick={async () => {
                   if (submissionError) setSubmissionError(undefined);
                   const adminId = await getAdminID(admin.address);
-                  const signed = await signMessageAsync();
+                  const signed = await signDeleteAdminMessage();
                   mutate(
                     `http://localhost:3000/whitelist/${adminId}`,
                     async () => {
@@ -84,7 +87,7 @@ export const AdminManager: React.FC<{}> = () => {
             if (submissionError) setSubmissionError(undefined);
             const signed = await signMessageAsync();
             mutate(`http://localhost:3000/whitelist`, async () => {
-              const res = await addAdmin("test", address, signed);
+              const res = await addAdmin(newAdminAddress, address, signed);
               const responseError = await res.text();
               if (res.status !== 200 && res.status !== 201) {
                 setSubmissionError(responseError);
