@@ -1,5 +1,6 @@
 import {
   getAddRoundMessage,
+  getDeleteAdminMessage,
   getDeleteRoundMessage,
   getEditRoundMessage,
 } from "../constants";
@@ -46,6 +47,22 @@ export const getRoundID = async (round: ScoringInterface): Promise<number> => {
   return fetchedId;
 };
 
+export const getAdminID = async (address: string): Promise<number> => {
+  const searchParams = new URLSearchParams({
+    address: address,
+  });
+  const selectedAdmin = await fetch(
+    `http://localhost:3000/whitelist?${searchParams}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+  const fetchedText = await selectedAdmin.text();
+  const fetchedId = JSON.parse(fetchedText).body[0].id;
+  return fetchedId;
+};
+
 export const deleteRound = async (
   roundId: number,
   address: string | undefined,
@@ -57,6 +74,39 @@ export const deleteRound = async (
     body: JSON.stringify({
       message: getDeleteRoundMessage(address),
       signature: signature,
+    }),
+  });
+  return res;
+};
+
+export const deleteAdmin = async (
+  adminId: number,
+  address: string | undefined,
+  signature: string
+): Promise<Response> => {
+  const res = await fetch(`http://localhost:3000/whitelist/${adminId}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: getDeleteAdminMessage(address),
+      signature: signature,
+    }),
+  });
+  return res;
+};
+
+export const addAdmin = async (
+  adminAddress: string,
+  signer: string | undefined,
+  signature: string
+) => {
+  const res = await fetch(`http://localhost:3000/whitelist`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      signature: signature,
+      message: getAddRoundMessage(signer),
+      address: adminAddress,
     }),
   });
   return res;

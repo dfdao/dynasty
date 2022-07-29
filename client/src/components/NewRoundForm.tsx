@@ -207,7 +207,7 @@ const FormItem = styled.div`
   width: 100%;
 `;
 
-const TextInput = styled.input`
+export const TextInput = styled.input`
   padding: 0.5rem 1rem;
   border: 2px solid #e5e5e5;
   border-radius: 4px;

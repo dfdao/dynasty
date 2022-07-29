@@ -6,6 +6,7 @@ import { NewRoundForm } from "./components/NewRoundForm";
 import Modal from "react-modal";
 import { useState } from "react";
 import { ScoringInterface } from "./types";
+import { AdminManager } from "./components/AdminManager";
 
 Modal.setAppElement("#root");
 
@@ -42,6 +43,9 @@ function App() {
           setEditingRound(round);
         }}
       />
+
+      <Title>Manage Admins</Title>
+      <AdminManager onEditRound={() => {}} />
     </Container>
   );
 }
