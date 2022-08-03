@@ -54,7 +54,7 @@ export const NewRoundForm: React.FC<{
       onSubmit={async (values) => {
         if (submissionError) setSubmissionError(undefined);
         const signedMessage = await signMessageAsync();
-        mutate(`http://localhost:3000/rounds`, async () => {
+        mutate(`http://localhost:8787/rounds`, async () => {
           let res: Response;
           if (editCurrentRound) {
             if (!oldRound) return;

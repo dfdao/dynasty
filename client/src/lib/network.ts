@@ -21,36 +21,16 @@ export const getRoundDiff = (oldRound: any, newRound: any) => {
   return diff;
 };
 
-export const getURLSearchParmsForRound = (
-  round: ScoringInterface
-): URLSearchParams => {
-  return new URLSearchParams({
-    endTime: round.endTime.toString(),
-    startTime: round.startTime.toString(),
-    configHash: round.configHash.toString(),
-    description: round.description,
-  });
-};
-export const getRoundID = async (round: ScoringInterface): Promise<number> => {
-  const searchParams = getURLSearchParmsForRound(round);
-  const selectedRoundID = await fetch(
-    `http://localhost:3000/rounds?${searchParams}`,
-    {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-  const fetchedText = await selectedRoundID.text();
-  const fetchedId = JSON.parse(fetchedText).body[0].id;
-  return fetchedId;
-};
+export function generateKeyFromRound(round: ScoringInterface) {
+	return `${round.configHash}-${round.startTime}-${round.endTime}`;
+}
 
 export const getAdminID = async (address: string): Promise<number> => {
   const searchParams = new URLSearchParams({
     address: address,
   });
   const selectedAdmin = await fetch(
-    `http://localhost:3000/whitelist?${searchParams}`,
+    `http://localhost:8787/whitelist?${searchParams}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -66,7 +46,7 @@ export const deleteRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:3000/rounds/${roundId}`, {
+  const res = await fetch(`http://localhost:8787/round`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -78,14 +58,15 @@ export const deleteRound = async (
 };
 
 export const deleteAdmin = async (
-  adminId: number,
+  adminAddress: string,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:3000/whitelist/${adminId}`, {
+  const res = await fetch(`http://localhost:8787/admins/${adminAddress}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      address: adminAddress,
       message: getDeleteAdminMessage(address),
       signature: signature,
     }),
@@ -98,9 +79,9 @@ export const addAdmin = async (
   signer: string | undefined,
   signature: string
 ) => {
-  const res = await fetch(`http://localhost:3000/whitelist`, {
+  const res = await fetch(`http://localhost:8787/admins`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    // headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       signature: signature,
       message: getAddAdminMessage(signer),
@@ -115,9 +96,9 @@ export const addRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:3000/rounds`, {
+  const res = await fetch(`http://localhost:8787/rounds`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    // headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       signature: signature,
       message: getAddRoundMessage(address),
@@ -128,6 +109,7 @@ export const addRound = async (
       configHash: round.configHash,
     }),
   });
+  console.log(res)
   return res;
 };
 
@@ -137,8 +119,7 @@ export const editRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const roundId = await getRoundID(oldRound);
-  const params = getURLSearchParmsForRound(newRound);
+  const roundId = generateKeyFromRound(oldRound);
   const roundDiff = getRoundDiff(oldRound, newRound);
   const res = await fetch(`http://localhost:3000/rounds/${roundId}`, {
     method: "PATCH",

@@ -5,7 +5,7 @@ import { formatStartTime } from "../lib/date";
 import { ScoringInterface } from "../types";
 import { useAccount, useSignMessage } from "wagmi";
 import useSWR, { useSWRConfig } from "swr";
-import { deleteRound, fetcher, getRoundID } from "../lib/network";
+import { deleteRound, fetcher, generateKeyFromRound } from "../lib/network";
 import { getDeleteRoundMessage } from "../constants";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
@@ -22,10 +22,12 @@ export const RoundList: React.FC<{
     message: getDeleteRoundMessage(address),
   });
   const { data: serverData, error } = useSWR(
-    "http://localhost:3000/rounds",
+    "http://localhost:8787/rounds",
     fetcher
   );
+  console.log(serverData)
   if (!serverData) return <div>Loading...</div>;
+  if (serverData.length === 0) return <div>No rounds found.</div>;
   if (error) return <div>Couldn't load previous rounds.</div>;
 
   return (
@@ -45,7 +47,7 @@ export const RoundList: React.FC<{
         </tr>
       </thead>
       <tbody>
-        {serverData.body.map((round: ScoringInterface) => (
+        {serverData.map((round: ScoringInterface) => (
           <RoundItem>
             <TableCell>{getConfigName(round.configHash)}</TableCell>
             <TableCell>{formatStartTime(round.startTime)}</TableCell>
@@ -60,19 +62,19 @@ export const RoundList: React.FC<{
             <TableCell>
               <button
                 onClick={async () => {
-                  if (submissionError) setSubmissionError(undefined);
-                  const roundId = await getRoundID(round);
-                  const signed = await signMessageAsync();
-                  mutate(
-                    `http://localhost:3000/rounds/${roundId}`,
-                    async () => {
-                      const res = await deleteRound(roundId, address, signed);
-                      const responseError = await res.text();
-                      if (res.status !== 200 && res.status !== 201) {
-                        setSubmissionError(responseError);
-                      }
-                    }
-                  );
+                  // if (submissionError) setSubmissionError(undefined);
+                  // const roundId = generateKeyFromRound(round)
+                  // const signed = await signMessageAsync();
+                  // mutate(
+                  //   `http://localhost:8787/rounds/${roundId}`,
+                  //   async () => {
+                  //     const res = await deleteRound(roundId, address, signed);
+                  //     const responseError = await res.text();
+                  //     if (res.status !== 200 && res.status !== 201) {
+                  //       setSubmissionError(responseError);
+                  //     }
+                  //   }
+                  // );
                 }}
                 disabled={!isConnected}
               >
