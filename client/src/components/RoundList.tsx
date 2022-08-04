@@ -22,7 +22,7 @@ export const RoundList: React.FC<{
     message: getDeleteRoundMessage(address),
   });
   const { data: serverData, error } = useSWR(
-    "http://localhost:8787/rounds",
+    `${import.meta.env.SERVER_URL}/rounds`,
     fetcher
   );
   console.log(serverData)
@@ -66,7 +66,7 @@ export const RoundList: React.FC<{
                   const roundId = generateKeyFromRound(round)
                   const signed = await signMessageAsync();
                   mutate(
-                    `http://localhost:8787/rounds/${roundId}`,
+                    `${import.meta.env.SERVER_URL}/rounds/${roundId}`,
                     async () => {
                       const res = await deleteRound(roundId, address, signed);
                       const responseError = await res.text();

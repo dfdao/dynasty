@@ -25,7 +25,7 @@ export function getDefaultResponseHeaders() {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Credentials': JSON.stringify(true),
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS, DELETE, PATCH',
+    'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS, DELETE, PATCH, PUT',
     'Access-Control-Allow-Headers':
       'X-Requested-With, Access-Control-Allow-Origin, X-HTTP-Method-Override, Content-Type, Authorization, Accept',
   }
@@ -44,9 +44,7 @@ export async function checkSignerAuthorized(message: string, sig: string, env: E
 
 export async function signerAuthorizationMiddleware(requestBody: 
 	Pick<(SignedScoringInterface | SignedAddAdminMessage) , 'message' | 'signature'>, env: Env): Promise<Response | undefined> {
-		console.log("ALJKSDJLAKSJDLKASJD")
 	const {signature, message} = requestBody;
-	console.log(requestBody)
 	if (signature && message) {
 		const authorized = await checkSignerAuthorized(message, signature, env);
 		if (!authorized) {
@@ -61,7 +59,7 @@ export async function signerAuthorizationMiddleware(requestBody:
 export async function roundValidationMiddleware(requestBody: SignedScoringInterface, env: Env): Promise<Response|undefined> {
 	const {startTime, endTime} = requestBody;
 
-signerAuthorizationMiddleware(requestBody, env);	
+	await signerAuthorizationMiddleware(requestBody, env);	
 
  // @ts-ignore
 	const currentRounds: {keys: ScoringInterface[]} = await env.DYNASTY_ROUNDS.list();
@@ -124,16 +122,12 @@ export async function handleAddRound(request: Request, env: Env): Promise<Respon
 
 export async function handleDeleteRound(request: Request, params: {id:string}, env: Env): Promise<Response> {
 	let body: SignedScoringInterface = await request.json();
-	const roundInvalid = await roundValidationMiddleware(body, env);
-	if (!roundInvalid) {
-	await env.DYNASTY_ROUNDS.delete(generateKeyFromRound(body));
+	await signerAuthorizationMiddleware(body, env);
+	await env.DYNASTY_ROUNDS.delete(params.id);
 	return new Response(JSON.stringify({message: "successfully deleted."}), {
 		status: 200,
 		headers: getDefaultResponseHeaders()
 	});
-} else {
-	return roundInvalid;
-	}
 }
 
 export async function handleEditRound(request: Request, params: {id: string}, env: Env): Promise<Response> {

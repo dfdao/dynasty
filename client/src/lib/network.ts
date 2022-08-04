@@ -30,7 +30,7 @@ export const getAdminID = async (address: string): Promise<number> => {
     address: address,
   });
   const selectedAdmin = await fetch(
-    `http://localhost:8787/whitelist?${searchParams}`,
+    `${import.meta.env.SERVER_URL}/whitelist?${searchParams}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -46,7 +46,7 @@ export const deleteRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:8787/round/${roundId}`, {
+  const res = await fetch(`${import.meta.env.SERVER_URL}/round/${roundId}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -62,7 +62,7 @@ export const deleteAdmin = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:8787/admins/${adminAddress}`, {
+  const res = await fetch(`${import.meta.env.SERVER_URL}/admins/${adminAddress}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -79,7 +79,7 @@ export const addAdmin = async (
   signer: string | undefined,
   signature: string
 ) => {
-  const res = await fetch(`http://localhost:8787/admins`, {
+  const res = await fetch(`${import.meta.env.SERVER_URL}/admins`, {
     method: "POST",
     // headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -96,7 +96,7 @@ export const addRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:8787/rounds`, {
+  const res = await fetch(`${import.meta.env.SERVER_URL}/rounds`, {
     method: "POST",
     // headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -120,7 +120,7 @@ export const editRound = async (
   signature: string
 ): Promise<Response> => {
   const roundId = generateKeyFromRound(oldRound);
-  const res = await fetch(`http://localhost:8787/rounds/${roundId}`, {
+  const res = await fetch(`${import.meta.env.SERVER_URL}/rounds/${roundId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

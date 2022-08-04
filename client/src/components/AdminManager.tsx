@@ -22,10 +22,9 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
     message: getDeleteAdminMessage(address),
   });
   const { data: adminData, error } = useSWR(
-    "http://localhost:8787/admins",
+    `${import.meta.env.SERVER_URL}/admins`,
     fetcher
   );
-  console.log("ADMINDATA", adminData)
   if (!adminData) return <div>Loading...</div>;
   if (adminData.length === 0) return <div>No admins found.</div>;
   if (error) return <div>Couldn't load admins.</div>;
@@ -57,7 +56,7 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
                   if (submissionError) setSubmissionError(undefined);
                   const signed = await signDeleteAdminMessage();
                   mutate(
-                    `http://localhost:8787/admin/${admin.name}`,
+                    `${import.meta.env.SERVER_URL}/admins/${admin.name}`,
                     async () => {
                       const res = await deleteAdmin(admin.name, address, signed);
                       const responseError = await res.text();
@@ -87,7 +86,7 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
           onClick={async () => {
             if (submissionError) setSubmissionError(undefined);
             const signed = await signMessageAsync();
-            mutate(`http://localhost:8787/admins`, async () => {
+            mutate(`${import.meta.env.SERVER_URL}/admins`, async () => {
               const res = await addAdmin(newAdminAddress, address, signed);
               const responseError = await res.text();
               if (res.status !== 200 && res.status !== 201) {
