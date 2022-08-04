@@ -81,13 +81,17 @@ export async function roundValidationMiddleware(
       headers: getDefaultResponseHeaders(),
     });
   }
-  const currentRounds: ScoringInterface[] = [];
+  const rounds: ScoringInterface[] = [];
   for (const roundKey of retrievedKeys.keys) {
     const value = await env.DYNASTY_ROUNDS.get(roundKey.name);
     if (value !== null) {
-      currentRounds.push(JSON.parse(value));
+      rounds.push(JSON.parse(value));
     }
   }
+
+  const currentRounds = rounds.filter((round) => {
+    return round.configHash !== requestBody.configHash;
+  });
 
   const sameStartAndEnd = currentRounds.filter((round) => {
     return round.startTime === startTime && round.endTime === endTime;
@@ -107,8 +111,11 @@ export async function roundValidationMiddleware(
 
   const roundTimesOverlap = currentRounds.filter((round) => {
     return (
+      (startTime >= round.startTime && endTime <= round.endTime) ||
+      (endTime >= round.startTime && endTime <= round.endTime) ||
       (startTime >= round.startTime && startTime <= round.endTime) ||
-      (endTime >= round.startTime && endTime <= round.endTime)
+      (startTime <= round.startTime && endTime >= round.endTime) ||
+      (startTime >= round.startTime && endTime >= round.endTime)
     );
   });
 
