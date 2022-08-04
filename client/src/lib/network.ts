@@ -15,7 +15,7 @@ export const deleteRound = async (
   signature: string
 ): Promise<Response> => {
   const res = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}/round/${roundConfigHash}`,
+    `${import.meta.env.VITE_SERVER_URL}/rounds/${roundConfigHash}`,
     {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -93,7 +93,7 @@ export const editRound = async (
   signature: string
 ): Promise<Response> => {
   const res = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}/round/${newRound.configHash}`,
+    `${import.meta.env.VITE_SERVER_URL}/rounds/${newRound.configHash}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
