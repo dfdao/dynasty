@@ -167,7 +167,7 @@ export const NewRoundForm: React.FC<{
             )}
             {submissionError && isConnected && (
               <ErrorBanner>
-                <span>🚫 {submissionError}</span>
+                <span>🚫 {JSON.parse(submissionError).message}</span>
               </ErrorBanner>
             )}
             {!isConnected && (

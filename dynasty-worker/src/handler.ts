@@ -119,10 +119,8 @@ export async function handleAddRound(
   const { configHash, description, startTime, endTime } = body;
   const roundInvalid = await roundValidationMiddleware(body, env);
   // check if configHash already exists
-  const sameConfigHash = env.DYNASTY_ROUNDS.keys.filter((round) => {
-    return round.configHash === configHash;
-  });
-  if (sameConfigHash.length > 0) {
+  const configExists = await env.DYNASTY_ROUNDS.get(configHash);
+  if (!configExists) {
     return new Response(
       JSON.stringify({
         message: "Round with same configHash already exists",
