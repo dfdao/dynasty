@@ -22,7 +22,7 @@ export const getRoundDiff = (oldRound: any, newRound: any) => {
 };
 
 export function generateKeyFromRound(round: ScoringInterface) {
-	return `${round.configHash}-${round.startTime}-${round.endTime}`;
+  return `${round.configHash}-${round.startTime}-${round.endTime}`;
 }
 
 export const getAdminID = async (address: string): Promise<number> => {
@@ -46,14 +46,17 @@ export const deleteRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/round/${roundId}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: getDeleteRoundMessage(address),
-      signature: signature,
-    }),
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}/round/${roundId}`,
+    {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: getDeleteRoundMessage(address),
+        signature: signature,
+      }),
+    }
+  );
   return res;
 };
 
@@ -62,15 +65,18 @@ export const deleteAdmin = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/admins/${adminAddress}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      address: adminAddress,
-      message: getDeleteAdminMessage(address),
-      signature: signature,
-    }),
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}/admins/${adminAddress}`,
+    {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        address: adminAddress,
+        message: getDeleteAdminMessage(address),
+        signature: signature,
+      }),
+    }
+  );
   return res;
 };
 
@@ -109,7 +115,7 @@ export const addRound = async (
       configHash: round.configHash,
     }),
   });
-  console.log(res)
+  console.log(res);
   return res;
 };
 
@@ -120,14 +126,17 @@ export const editRound = async (
   signature: string
 ): Promise<Response> => {
   const roundId = generateKeyFromRound(oldRound);
-  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/rounds/${roundId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: getEditRoundMessage(address),
-      signature: signature,
-      ...newRound
-    }),
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_SERVER_URL}/round/${roundId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: getEditRoundMessage(address),
+        signature: signature,
+        ...newRound,
+      }),
+    }
+  );
   return res;
 };
