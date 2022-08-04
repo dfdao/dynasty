@@ -62,19 +62,19 @@ export const RoundList: React.FC<{
             <TableCell>
               <button
                 onClick={async () => {
-                  // if (submissionError) setSubmissionError(undefined);
-                  // const roundId = generateKeyFromRound(round)
-                  // const signed = await signMessageAsync();
-                  // mutate(
-                  //   `http://localhost:8787/rounds/${roundId}`,
-                  //   async () => {
-                  //     const res = await deleteRound(roundId, address, signed);
-                  //     const responseError = await res.text();
-                  //     if (res.status !== 200 && res.status !== 201) {
-                  //       setSubmissionError(responseError);
-                  //     }
-                  //   }
-                  // );
+                  if (submissionError) setSubmissionError(undefined);
+                  const roundId = generateKeyFromRound(round)
+                  const signed = await signMessageAsync();
+                  mutate(
+                    `http://localhost:8787/rounds/${roundId}`,
+                    async () => {
+                      const res = await deleteRound(roundId, address, signed);
+                      const responseError = await res.text();
+                      if (res.status !== 200 && res.status !== 201) {
+                        setSubmissionError(responseError);
+                      }
+                    }
+                  );
                 }}
                 disabled={!isConnected}
               >

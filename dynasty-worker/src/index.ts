@@ -9,7 +9,7 @@
  */
 
 import { Router } from 'itty-router';
-import { getDefaultResponseHeaders, handleAddAdmin, handleAddRound, handleGetAdmins, handleGetRounds, handleRevokeAdmin, handleSelectRound, ScoringInterface, SignedScoringInterface } from './handler';
+import { getDefaultResponseHeaders, handleAddAdmin, handleAddRound, handleDeleteRound, handleEditRound, handleGetAdmins, handleGetRounds, handleRevokeAdmin, handleSelectRound, ScoringInterface, SignedScoringInterface } from './handler';
 
 
 export interface Env {
@@ -53,6 +53,15 @@ export default {
       return handleSelectRound(params, env);
     });
 
+    router.delete("/round/:id", ({params}: {params: {id: string}}, env: Env): Promise<Response> => {
+      return handleDeleteRound(request, params, env);
+    })
+
+   router.put("/round/:id", ({params}: {params: {id: string}}, env: Env): Promise<Response> => {
+      return handleEditRound(request, params, env);
+    })
+
+
     ////////////////////////////
     // ADMINS
     ////////////////////////////
@@ -66,15 +75,15 @@ export default {
     })
 
     router.delete("/admins/:address", (request: Request, params: {address: string}, env: Env): Promise<Response> => {
-    console.log("OOGABOOGA")
       return handleRevokeAdmin(request, params, env);
     })
 
+    // router.options("/admins/:address", handleOptions)
+
 		if (request.method === 'OPTIONS') {
 			return handleOptions(request);
-		} else {
-		  return router.handle(request, env)	
     }
+		  return router.handle(request, env)	
 	},
 };
 
@@ -100,6 +109,7 @@ function handleOptions(request: Request) {
     };
 
     return new Response(null, {
+      status: 204,
       headers: respHeaders,
     });
   } else {
@@ -113,5 +123,3 @@ function handleOptions(request: Request) {
     });
   }
 }
-
-

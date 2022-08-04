@@ -44,6 +44,7 @@ export async function checkSignerAuthorized(message: string, sig: string, env: E
 
 export async function signerAuthorizationMiddleware(requestBody: 
 	Pick<(SignedScoringInterface | SignedAddAdminMessage) , 'message' | 'signature'>, env: Env): Promise<Response | undefined> {
+		console.log("ALJKSDJLAKSJDLKASJD")
 	const {signature, message} = requestBody;
 	console.log(requestBody)
 	if (signature && message) {
@@ -121,11 +122,10 @@ export async function handleAddRound(request: Request, env: Env): Promise<Respon
 	return roundInvalid;
 }}
 
-export async function handleDeleteRound(request: Request, env: Env): Promise<Response> {
+export async function handleDeleteRound(request: Request, params: {id:string}, env: Env): Promise<Response> {
 	let body: SignedScoringInterface = await request.json();
 	const roundInvalid = await roundValidationMiddleware(body, env);
 	if (!roundInvalid) {
-	// @ts-ignore
 	await env.DYNASTY_ROUNDS.delete(generateKeyFromRound(body));
 	return new Response(JSON.stringify({message: "successfully deleted."}), {
 		status: 200,
@@ -134,6 +134,18 @@ export async function handleDeleteRound(request: Request, env: Env): Promise<Res
 } else {
 	return roundInvalid;
 	}
+}
+
+export async function handleEditRound(request: Request, params: {id: string}, env: Env): Promise<Response> {
+	let body: SignedScoringInterface = await request.json();
+	const roundInvalid = await roundValidationMiddleware(body, env);
+	if (roundInvalid) return roundInvalid
+	await env.DYNASTY_ROUNDS.delete(params.id);
+	await env.DYNASTY_ROUNDS.put(params.id, JSON.stringify(body));
+	return new Response(JSON.stringify({message: "successfully edited round."}), {
+		status: 200,
+		headers: getDefaultResponseHeaders()
+	})
 }
 
 // export async function handleEditRound(request: Request) : Promise<Response>  {

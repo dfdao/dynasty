@@ -42,11 +42,11 @@ export const getAdminID = async (address: string): Promise<number> => {
 };
 
 export const deleteRound = async (
-  roundId: number,
+  roundId: string,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`http://localhost:8787/round`, {
+  const res = await fetch(`http://localhost:8787/round/${roundId}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -120,14 +120,13 @@ export const editRound = async (
   signature: string
 ): Promise<Response> => {
   const roundId = generateKeyFromRound(oldRound);
-  const roundDiff = getRoundDiff(oldRound, newRound);
-  const res = await fetch(`http://localhost:3000/rounds/${roundId}`, {
-    method: "PATCH",
+  const res = await fetch(`http://localhost:8787/rounds/${roundId}`, {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message: getEditRoundMessage(address),
       signature: signature,
-      ...roundDiff,
+      ...newRound
     }),
   });
   return res;
