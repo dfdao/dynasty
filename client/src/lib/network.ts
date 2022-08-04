@@ -83,7 +83,7 @@ export const addRound = async (
       configHash: round.configHash,
     }),
   });
-  console.log(res);
+  // console.log(res);
   return res;
 };
 

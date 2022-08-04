@@ -143,7 +143,7 @@ export async function handleAddRound(
         endTime,
       })
     );
-    console.log(done);
+    // console.log(done);
     return new Response(
       JSON.stringify({
         configHash,
@@ -262,9 +262,9 @@ export async function handleRevokeAdmin(
   params: { address: string },
   env: Env
 ): Promise<Response> {
-  console.log("ASKDJHAKSDHAKSDHKASHJD");
+  // console.log("ASKDJHAKSDHAKSDHKASHJD");
   const body: SignedAddAdminMessage = await request.json();
-  console.log("BODY", body);
+  // console.log("BODY", body);
   signerAuthorizationMiddleware(body, env);
   await env.DYNASTY_ADMIN.delete(params.address);
   return new Response(null, {
