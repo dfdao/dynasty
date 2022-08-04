@@ -2,7 +2,7 @@ import "../App.css";
 import styled from "styled-components";
 import { useAccount, useSignMessage } from "wagmi";
 import useSWR, { useSWRConfig } from "swr";
-import { addAdmin, deleteAdmin, fetcher, getAdminID } from "../lib/network";
+import { addAdmin, deleteAdmin, fetcher } from "../lib/network";
 import { getAddAdminMessage, getDeleteAdminMessage } from "../constants";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
@@ -58,7 +58,11 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
                   mutate(
                     `${import.meta.env.VITE_SERVER_URL}/admins/${admin.name}`,
                     async () => {
-                      const res = await deleteAdmin(admin.name, address, signed);
+                      const res = await deleteAdmin(
+                        admin.name,
+                        address,
+                        signed
+                      );
                       const responseError = await res.text();
                       if (res.status !== 200 && res.status !== 201) {
                         setSubmissionError(responseError);
