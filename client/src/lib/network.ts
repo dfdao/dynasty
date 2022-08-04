@@ -9,17 +9,13 @@ import { ScoringInterface } from "../types";
 
 export const fetcher = (...args: any) => fetch(args).then((res) => res.json());
 
-export function generateKeyFromRound(round: ScoringInterface) {
-  return `${round.configHash}-${round.startTime}-${round.endTime}`;
-}
-
 export const deleteRound = async (
-  roundId: string,
+  roundConfigHash: string,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
   const res = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}/round/${roundId}`,
+    `${import.meta.env.VITE_SERVER_URL}/round/${roundConfigHash}`,
     {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -93,13 +89,11 @@ export const addRound = async (
 
 export const editRound = async (
   newRound: ScoringInterface,
-  oldRound: ScoringInterface,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const roundId = generateKeyFromRound(oldRound);
   const res = await fetch(
-    `${import.meta.env.VITE_SERVER_URL}/round/${roundId}`,
+    `${import.meta.env.VITE_SERVER_URL}/round/${newRound.configHash}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

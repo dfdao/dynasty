@@ -42,12 +42,6 @@ export const NewRoundForm: React.FC<{
     undefined
   );
 
-  const oldRound = useMemo(() => {
-    if (editCurrentRound) {
-      return editCurrentRound;
-    }
-  }, []);
-
   return (
     <Formik
       initialValues={editCurrentRound ?? DEFAULT_SCORING_CONFIG}
@@ -57,8 +51,7 @@ export const NewRoundForm: React.FC<{
         mutate(`${import.meta.env.VITE_SERVER_URL}/rounds`, async () => {
           let res: Response;
           if (editCurrentRound) {
-            if (!oldRound) return;
-            res = await editRound(values, oldRound, address, signedMessage);
+            res = await editRound(values, address, signedMessage);
           } else {
             res = await addRound(values, address, signedMessage);
           }
