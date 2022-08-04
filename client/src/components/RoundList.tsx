@@ -25,7 +25,7 @@ export const RoundList: React.FC<{
     `${import.meta.env.VITE_SERVER_URL}/rounds`,
     fetcher
   );
-  console.log(serverData);
+  // console.log(serverData);
   if (!serverData) return <div>Loading...</div>;
   if (serverData.length === 0) return <div>No rounds found.</div>;
   if (error) return <div>Couldn't load previous rounds.</div>;
@@ -48,7 +48,7 @@ export const RoundList: React.FC<{
       </thead>
       <tbody>
         {serverData.map((round: ScoringInterface) => (
-          <RoundItem>
+          <RoundItem key={round.configHash}>
             <TableCell>{getConfigName(round.configHash)}</TableCell>
             <TableCell>{formatStartTime(round.startTime)}</TableCell>
             <TableCell>{formatStartTime(round.endTime)}</TableCell>

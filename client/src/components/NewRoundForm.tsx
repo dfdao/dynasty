@@ -59,6 +59,7 @@ export const NewRoundForm: React.FC<{
           console.log(res);
           console.log(responseError);
           if (res.status !== 200 && res.status !== 201) {
+            console.log(responseError);
             setSubmissionError(responseError);
           }
         });
@@ -161,7 +162,7 @@ export const NewRoundForm: React.FC<{
             {Object.keys(formik.errors).length > 0 && isConnected && (
               <ErrorBanner>
                 {Object.values(formik.errors).map((error) => (
-                  <span>🚫 {error}</span>
+                  <span key={error}>🚫 {error}</span>
                 ))}
               </ErrorBanner>
             )}
