@@ -30,7 +30,7 @@ export const getAdminID = async (address: string): Promise<number> => {
     address: address,
   });
   const selectedAdmin = await fetch(
-    `${import.meta.env.SERVER_URL}/whitelist?${searchParams}`,
+    `${import.meta.env.VITE_SERVER_URL}/whitelist?${searchParams}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -46,7 +46,7 @@ export const deleteRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`${import.meta.env.SERVER_URL}/round/${roundId}`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/round/${roundId}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -62,7 +62,7 @@ export const deleteAdmin = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`${import.meta.env.SERVER_URL}/admins/${adminAddress}`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/admins/${adminAddress}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -79,7 +79,7 @@ export const addAdmin = async (
   signer: string | undefined,
   signature: string
 ) => {
-  const res = await fetch(`${import.meta.env.SERVER_URL}/admins`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/admins`, {
     method: "POST",
     // headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -96,7 +96,7 @@ export const addRound = async (
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
-  const res = await fetch(`${import.meta.env.SERVER_URL}/rounds`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/rounds`, {
     method: "POST",
     // headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -120,7 +120,7 @@ export const editRound = async (
   signature: string
 ): Promise<Response> => {
   const roundId = generateKeyFromRound(oldRound);
-  const res = await fetch(`${import.meta.env.SERVER_URL}/rounds/${roundId}`, {
+  const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/rounds/${roundId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

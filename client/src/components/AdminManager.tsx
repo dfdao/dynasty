@@ -22,7 +22,7 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
     message: getDeleteAdminMessage(address),
   });
   const { data: adminData, error } = useSWR(
-    `${import.meta.env.SERVER_URL}/admins`,
+    `${import.meta.env.VITE_SERVER_URL}/admins`,
     fetcher
   );
   if (!adminData) return <div>Loading...</div>;
@@ -56,7 +56,7 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
                   if (submissionError) setSubmissionError(undefined);
                   const signed = await signDeleteAdminMessage();
                   mutate(
-                    `${import.meta.env.SERVER_URL}/admins/${admin.name}`,
+                    `${import.meta.env.VITE_SERVER_URL}/admins/${admin.name}`,
                     async () => {
                       const res = await deleteAdmin(admin.name, address, signed);
                       const responseError = await res.text();
@@ -86,7 +86,7 @@ export const AdminManager: React.FC<Record<string, never>> = () => {
           onClick={async () => {
             if (submissionError) setSubmissionError(undefined);
             const signed = await signMessageAsync();
-            mutate(`${import.meta.env.SERVER_URL}/admins`, async () => {
+            mutate(`${import.meta.env.VITE_SERVER_URL}/admins`, async () => {
               const res = await addAdmin(newAdminAddress, address, signed);
               const responseError = await res.text();
               if (res.status !== 200 && res.status !== 201) {
