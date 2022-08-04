@@ -73,10 +73,23 @@ export async function roundValidationMiddleware(
 
   await signerAuthorizationMiddleware(requestBody, env);
 
-  const currentRounds: { keys: ScoringInterface[] } =
+  const retrievedKeys: { keys: { name: string }[] } =
     await env.DYNASTY_ROUNDS.list();
+  if (!retrievedKeys) {
+    return new Response("Couldn't validate", {
+      status: 400,
+      headers: getDefaultResponseHeaders(),
+    });
+  }
+  const currentRounds: ScoringInterface[] = [];
+  for (const roundKey of retrievedKeys.keys) {
+    const value = await env.DYNASTY_ROUNDS.get(roundKey.name);
+    if (value !== null) {
+      currentRounds.push(JSON.parse(value));
+    }
+  }
 
-  const sameStartAndEnd = currentRounds.keys.filter((round) => {
+  const sameStartAndEnd = currentRounds.filter((round) => {
     return round.startTime === startTime && round.endTime === endTime;
   });
   if (sameStartAndEnd.length > 0) {
@@ -92,7 +105,7 @@ export async function roundValidationMiddleware(
     );
   }
 
-  const roundTimesOverlap = currentRounds.keys.filter((round) => {
+  const roundTimesOverlap = currentRounds.filter((round) => {
     return (
       (startTime >= round.startTime && startTime <= round.endTime) ||
       (endTime >= round.startTime && endTime <= round.endTime)
@@ -120,7 +133,7 @@ export async function handleAddRound(
   const roundInvalid = await roundValidationMiddleware(body, env);
   // check if configHash already exists
   const configExists = await env.DYNASTY_ROUNDS.get(configHash);
-  if (!configExists) {
+  if (configExists) {
     return new Response(
       JSON.stringify({
         message: "Round with same configHash already exists",
@@ -274,7 +287,7 @@ export async function handleRevokeAdmin(
 }
 
 export async function handleGetAdmins(env: Env): Promise<Response> {
-  const retrieved: { keys: { address: string; authorized: boolean }[] } =
+  const retrieved: { keys: { name: string }[] } =
     await env.DYNASTY_ADMIN.list();
   if (retrieved) {
     return new Response(JSON.stringify(retrieved.keys), {

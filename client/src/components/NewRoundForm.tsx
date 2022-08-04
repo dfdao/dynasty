@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Formik, useField, useFormikContext } from "formik";
 import {
   DEFAULT_SCORING_CONFIG,
