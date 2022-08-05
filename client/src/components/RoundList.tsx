@@ -25,7 +25,7 @@ export const RoundList: React.FC<{
     `${import.meta.env.VITE_SERVER_URL}/rounds`,
     fetcher
   );
-  // console.log(serverData);
+
   if (!serverData) return <div>Loading...</div>;
   if (serverData.length === 0) return <div>No rounds found.</div>;
   if (error) return <div>Couldn't load previous rounds.</div>;
