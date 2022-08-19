@@ -5,7 +5,7 @@ import {
   getDeleteRoundMessage,
   getEditRoundMessage,
 } from "../constants";
-import { ScoringInterface } from "../types";
+import { RoundInterface } from "../types";
 
 export const fetcher = (...args: any) => fetch(args).then((res) => res.json());
 
@@ -66,7 +66,7 @@ export const addAdmin = async (
 };
 
 export const addRound = async (
-  round: ScoringInterface,
+  round: RoundInterface,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {
@@ -88,7 +88,7 @@ export const addRound = async (
 };
 
 export const editRound = async (
-  newRound: ScoringInterface,
+  newRound: RoundInterface,
   address: string | undefined,
   signature: string
 ): Promise<Response> => {

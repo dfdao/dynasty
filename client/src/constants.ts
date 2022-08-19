@@ -1,11 +1,11 @@
-import { ScoringInterface } from "./types";
+import { RoundInterface } from "./types";
 
-export const DEFAULT_SCORING_CONFIG: ScoringInterface = {
+export const DEFAULT_SCORING_CONFIG: RoundInterface = {
   configHash: "",
-  winner: undefined,
   startTime: new Date().getTime(),
   endTime: new Date().getTime(),
-  description: "",
+  seasonId: 1,
+  parentAddress: "",
 };
 
 export const getAddRoundMessage = (address: string | undefined): string => {

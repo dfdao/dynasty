@@ -17,7 +17,7 @@ export const AddAdmin = () => {
     args: [newAdminAddress, true],
   });
 
-  const { write: addAdminWrite } = useContractWrite(config);
+  const { writeAsync: addAdminWrite } = useContractWrite(config);
 
   return (
     <InputWithButtonContainer>
@@ -29,7 +29,8 @@ export const AddAdmin = () => {
       <button
         style={{ position: "relative" }}
         onClick={async () => {
-          addAdminWrite?.();
+          await addAdminWrite?.();
+          setNewAdminAddress("");
         }}
         className="btn"
         disabled={

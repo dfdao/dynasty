@@ -23,6 +23,7 @@ export const AdminManager: React.FC = () => {
     addressOrName: registry,
     contractInterface: abi,
     functionName: "getAllAdmins",
+    watch: true,
   });
   if (!adminData || isLoading) return <div>Loading...</div>;
   if (adminData.length === 0) return <div>No admins found.</div>;

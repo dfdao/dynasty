@@ -1,31 +1,20 @@
 import "../App.css";
 import styled from "styled-components";
-import { getConfigName } from "../lib/getConfigName";
-import { formatStartTime } from "../lib/date";
-import { ScoringInterface } from "../types";
-import { useAccount, useContractRead, useSignMessage } from "wagmi";
-import useSWR, { useSWRConfig } from "swr";
-import { deleteRound, fetcher } from "../lib/network";
+import { useContractRead } from "wagmi";
 import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
-import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
-import { ethers } from "ethers";
+import { constants, ethers, utils } from "ethers";
+import { RoundRow } from "./RoundRow";
 
-export interface ScoringResponse {
+export interface RoundResponse {
   configHash: string;
-  description: string;
-  winner: string | undefined;
   startTime: ethers.BigNumber;
   endTime: ethers.BigNumber;
+  parentAddress: string;
 }
 
 export const RoundList: React.FC = () => {
-  const { address, isConnected } = useAccount();
-  const [submissionError, setSubmissionError] = useState<string | undefined>(
-    undefined
-  );
-
   const {
     data: roundData,
     isError,
@@ -34,21 +23,25 @@ export const RoundList: React.FC = () => {
     addressOrName: registry,
     contractInterface: abi,
     functionName: "getAllGrandPrix",
+    watch: true,
   });
 
   if (!roundData || isLoading) return <div>Loading...</div>;
-  if (roundData.length === 0) return <div>No rounds found.</div>;
+  if (
+    roundData.filter((r) => r.parentAddress !== constants.AddressZero)
+      .length === 0
+  )
+    return (
+      <div
+        style={{ fontFamily: "Menlo, monospace", textTransform: "uppercase" }}
+      >
+        No rounds found.
+      </div>
+    );
   if (isError) return <div>Couldn't load previous rounds.</div>;
-
-  console.log(roundData);
 
   return (
     <RoundsContainer>
-      {submissionError && (
-        <ErrorBanner>
-          <span>{submissionError}</span>
-        </ErrorBanner>
-      )}
       <thead>
         <tr>
           <TableHeader>Name</TableHeader>
@@ -57,41 +50,11 @@ export const RoundList: React.FC = () => {
         </tr>
       </thead>
       <tbody>
-        {roundData.map((round: ScoringResponse) => (
-          <RoundItem key={round.configHash}>
-            <TableCell>{getConfigName(round.configHash)}</TableCell>
-            <TableCell>{formatStartTime(round.startTime.toNumber())}</TableCell>
-            <TableCell>{formatStartTime(round.endTime.toNumber())}</TableCell>
-            <TableCell>
-              <button
-                className="btn"
-                onClick={async () => {
-                  // if (submissionError) setSubmissionError(undefined);
-                  // const signed = await signMessageAsync();
-                  // mutate(
-                  //   `${import.meta.env.VITE_SERVER_URL}/rounds/${
-                  //     round.configHash
-                  //   }`,
-                  //   async () => {
-                  //     const res = await deleteRound(
-                  //       round.configHash,
-                  //       address,
-                  //       signed
-                  //     );
-                  //     const responseError = await res.text();
-                  //     if (res.status !== 200 && res.status !== 201) {
-                  //       setSubmissionError(responseError);
-                  //     }
-                  //   }
-                  // );
-                }}
-                disabled={!isConnected}
-              >
-                Delete
-              </button>
-            </TableCell>
-          </RoundItem>
-        ))}
+        {roundData
+          .filter((r) => r.parentAddress !== ethers.constants.AddressZero)
+          .map((round: RoundResponse, i: number) => (
+            <RoundRow round={round} key={i} />
+          ))}
       </tbody>
     </RoundsContainer>
   );

@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, useField, useFormikContext } from "formik";
 import { DEFAULT_SCORING_CONFIG } from "../constants";
 import styled from "styled-components";
 import DateTimePicker from "react-datetime-picker";
-import { useAccount, useContractWrite } from "wagmi";
+import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
 import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
+import { RoundInterface } from "../types";
 
 export const DateTimeField = ({ ...props }: any) => {
   const { setFieldValue } = useFormikContext();
@@ -24,29 +25,33 @@ export const DateTimeField = ({ ...props }: any) => {
 };
 
 export const NewRoundForm: React.FC = () => {
+  const [submissionError, setSubmissionError] = useState<string | undefined>(
+    undefined
+  );
   const { isConnected } = useAccount();
+
   const { write: addRound } = useContractWrite({
     mode: "recklesslyUnprepared",
     addressOrName: registry,
     contractInterface: abi,
     functionName: "addGrandPrix",
+    onError: (error) => {
+      setSubmissionError(error.message);
+    },
   });
 
   return (
     <Formik
       initialValues={DEFAULT_SCORING_CONFIG}
-      onSubmit={async (values) => {
-        const v = {
-          startTime: values.startTime,
-          endTime: values.endTime,
-          configHash: values.configHash,
-          timeWeight: 1,
-          scoreWeight: 1,
-          silverWeight: 1,
-          parentAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        };
+      onSubmit={async (values: RoundInterface) => {
         addRound({
-          recklesslySetUnpreparedArgs: [...Object.values(v)],
+          recklesslySetUnpreparedArgs: [
+            values.startTime,
+            values.endTime,
+            values.configHash,
+            values.parentAddress,
+            values.seasonId,
+          ],
         });
       }}
       validate={async (values) => {
@@ -68,10 +73,6 @@ export const NewRoundForm: React.FC = () => {
           errors["configHash"] = "Config hash is required.";
         }
 
-        if (values.description.length === 0) {
-          errors["description"] = "Description is required.";
-        }
-
         // validate start and end times
         if (values.startTime > values.endTime) {
           errors["startTime"] = "Start time must be before end time.";
@@ -79,6 +80,15 @@ export const NewRoundForm: React.FC = () => {
         if (values.startTime === values.endTime) {
           errors["startEndEqual"] =
             "Start time and end time must be different.";
+        }
+        if (!values.seasonId) {
+          errors["seasonId"] = "Season is required.";
+        }
+        if (!values.parentAddress) {
+          errors["parentAddress"] = "Map address is required.";
+        }
+        if (!values.parentAddress.startsWith("0x")) {
+          errors["parentAddressPrefix"] = "Map address must start with 0x";
         }
         return errors;
       }}
@@ -115,6 +125,29 @@ export const NewRoundForm: React.FC = () => {
             />
           </FormItem>
           <FormItem>
+            <Label>Map Address</Label>
+            <TextInput
+              type="text"
+              id="parentAddress"
+              name="parentAddress"
+              value={formik.values.parentAddress}
+              onChange={formik.handleChange}
+              placeholder="0xmapAddress..."
+            />
+          </FormItem>
+          <FormItem>
+            <Label>Season</Label>
+            <TextInput
+              type="number"
+              id="seasonId"
+              name="seasonId"
+              min="1"
+              value={formik.values.seasonId}
+              onChange={formik.handleChange}
+              placeholder="1"
+            />
+          </FormItem>
+          <FormItem>
             <button
               disabled={!isConnected || Object.keys(formik.errors).length > 0}
               className="btn"
@@ -129,11 +162,11 @@ export const NewRoundForm: React.FC = () => {
                 ))}
               </ErrorBanner>
             )}
-            {/* {submissionError && isConnected && (
+            {submissionError && isConnected && (
               <ErrorBanner>
-                <span>🚫 {JSON.parse(submissionError).message}</span>
+                <span>🚫 {submissionError}</span>
               </ErrorBanner>
-            )} */}
+            )}
             {!isConnected && (
               <span>
                 Connect wallet. Only a community admin can add/remove new
@@ -187,6 +220,7 @@ const Form = styled.form`
   padding: 1rem;
   align-items: center;
   justify-content: center;
+  width: 600px;
 `;
 
 const Picker = styled(DateTimePicker)`

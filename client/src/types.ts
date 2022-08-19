@@ -1,9 +1,9 @@
-export interface ScoringInterface {
-  configHash: string;
-  description: string;
-  winner: string | undefined;
+export interface RoundInterface {
   startTime: number;
   endTime: number;
+  configHash: string;
+  parentAddress: string;
+  seasonId: number;
 }
 
 export type ValidationErrorType =

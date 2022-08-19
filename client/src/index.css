@@ -63,7 +63,6 @@ h1 {
 .btn:disabled {
   cursor: not-allowed;
   background: rgba(64, 221, 155, 0.4);
-  border: 2px solid rgba(11, 78, 50, 0.4);
   color: rgba(77, 202, 150, 0.734);
 }
 .btn:focus,
