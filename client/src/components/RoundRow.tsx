@@ -23,6 +23,7 @@ export const RoundRow: React.FC<{ round: RoundResponse }> = ({ round }) => {
       <TableCell>{getConfigName(round.configHash)}</TableCell>
       <TableCell>{formatStartTime(round.startTime.toNumber())}</TableCell>
       <TableCell>{formatStartTime(round.endTime.toNumber())}</TableCell>
+      <TableCell>{round.seasonId.toNumber()}</TableCell>
       <TableCell>
         <button
           className="btn"

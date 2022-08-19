@@ -12,6 +12,7 @@ export interface RoundResponse {
   startTime: ethers.BigNumber;
   endTime: ethers.BigNumber;
   parentAddress: string;
+  seasonId: ethers.BigNumber;
 }
 
 export const RoundList: React.FC = () => {
@@ -47,6 +48,7 @@ export const RoundList: React.FC = () => {
           <TableHeader>Name</TableHeader>
           <TableHeader>Start</TableHeader>
           <TableHeader>End</TableHeader>
+          <TableHeader>Season</TableHeader>
         </tr>
       </thead>
       <tbody>
