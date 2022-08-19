@@ -1,8 +1,8 @@
 import React from "react";
-import styled from "styled-components";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
+import { RoundItem, TableCell } from "./RoundList";
 
 export const AdminRow: React.FC<{ admin: string }> = ({ admin }) => {
   const { address, isConnected } = useAccount();
@@ -21,6 +21,7 @@ export const AdminRow: React.FC<{ admin: string }> = ({ admin }) => {
       </TableCell>
       <TableCell>
         <button
+          className="btn"
           disabled={!isConnected}
           onClick={() => {
             deleteAdmin?.();
@@ -32,16 +33,3 @@ export const AdminRow: React.FC<{ admin: string }> = ({ admin }) => {
     </RoundItem>
   );
 };
-
-const RoundItem = styled.tr`
-  border: 2px solid #e3cca0;
-  width: 100%;
-  transition: all 0.2s ease;
-  &:hover {
-    background: #ead7b0;
-  }
-`;
-
-const TableCell = styled.td`
-  padding: 8px 16px;
-`;

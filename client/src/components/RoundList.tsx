@@ -11,7 +11,6 @@ import { registry } from "@dfdao/gp-registry/deployment.json";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
 import { ethers } from "ethers";
-import { EditRound } from "./EditRound";
 
 export interface ScoringResponse {
   configHash: string;
@@ -21,10 +20,7 @@ export interface ScoringResponse {
   endTime: ethers.BigNumber;
 }
 
-export const RoundList: React.FC<{
-  onEditRound: (round: ScoringInterface) => void;
-}> = ({ onEditRound }) => {
-  const { mutate } = useSWRConfig();
+export const RoundList: React.FC = () => {
   const { address, isConnected } = useAccount();
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
@@ -58,25 +54,17 @@ export const RoundList: React.FC<{
           <TableHeader>Name</TableHeader>
           <TableHeader>Start</TableHeader>
           <TableHeader>End</TableHeader>
-          <TableHeader>Description</TableHeader>
-          <TableHeader>Winner</TableHeader>
         </tr>
       </thead>
       <tbody>
-        {roundData.map((round: ScoringResponse, i: number) => (
+        {roundData.map((round: ScoringResponse) => (
           <RoundItem key={round.configHash}>
             <TableCell>{getConfigName(round.configHash)}</TableCell>
             <TableCell>{formatStartTime(round.startTime.toNumber())}</TableCell>
             <TableCell>{formatStartTime(round.endTime.toNumber())}</TableCell>
-            {/* <TableCell>{round.description.slice(0, 24) + "..."}</TableCell> */}
-            <TableCell>
-              {round.winner && round.winner.length > 0 ? round.winner : "None"}
-            </TableCell>
-            <TableCell>
-              <EditRound round={round} id={i} />
-            </TableCell>
             <TableCell>
               <button
+                className="btn"
                 onClick={async () => {
                   // if (submissionError) setSubmissionError(undefined);
                   // const signed = await signMessageAsync();
@@ -109,9 +97,17 @@ export const RoundList: React.FC<{
   );
 };
 
-const TableHeader = styled.th``;
+export const TableHeader = styled.th`
+  font-family: "Menlo", "Inconsolata", monospace;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: rgb(100, 115, 120);
+  margin-bottom: 1rem;
+  text-align: left;
+  padding: 8px 16px;
+`;
 
-const RoundsContainer = styled.div`
+export const RoundsContainer = styled.div`
   border-collapse: collapse;
   display: block;
   border-spacing: 0;
@@ -119,15 +115,16 @@ const RoundsContainer = styled.div`
   overflow-y: auto;
 `;
 
-const RoundItem = styled.tr`
-  border: 2px solid #e3cca0;
+export const RoundItem = styled.tr`
+  border: 1px solid rgb(53, 71, 73);
   width: 100%;
   transition: all 0.2s ease;
   &:hover {
-    background: #ead7b0;
+    background: rgb(32, 36, 37);
   }
 `;
 
-const TableCell = styled.td`
+export const TableCell = styled.td`
   padding: 8px 16px;
+  text-align: left;
 `;

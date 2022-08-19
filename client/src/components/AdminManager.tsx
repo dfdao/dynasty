@@ -8,6 +8,7 @@ import { registry } from "@dfdao/gp-registry/deployment.json";
 import { AdminRow } from "./AdminRow";
 import { AddAdmin } from "./AddAdmin";
 import { ethers } from "ethers";
+import { RoundsContainer, TableHeader } from "./RoundList";
 
 export const AdminManager: React.FC = () => {
   const [submissionError, setSubmissionError] = useState<string | undefined>(
@@ -34,26 +35,20 @@ export const AdminManager: React.FC = () => {
           <span>{submissionError}</span>
         </ErrorBanner>
       )}
-      <div>Admin Address</div>
-      <table>
-        <tbody>
-          {adminData
-            .filter((a) => a !== ethers.constants.AddressZero)
-            .map((admin) => (
-              <AdminRow admin={admin} />
-            ))}
-        </tbody>
-      </table>
+      <thead>
+        <tr>
+          <TableHeader>Address</TableHeader>
+        </tr>
+      </thead>
+      <tbody>
+        {adminData
+          .filter((a) => a !== ethers.constants.AddressZero)
+          .map((admin) => (
+            <AdminRow admin={admin} />
+          ))}
+      </tbody>
       <div style={{ height: "16px" }} />
       <AddAdmin />
     </RoundsContainer>
   );
 };
-
-const RoundsContainer = styled.div`
-  border-collapse: collapse;
-  display: block;
-  border-spacing: 0;
-  font-size: 1rem;
-  overflow-y: auto;
-`;

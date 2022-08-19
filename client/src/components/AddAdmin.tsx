@@ -26,11 +26,12 @@ export const AddAdmin = () => {
         onChange={(e) => setNewAdminAddress(e.target.value)}
         value={newAdminAddress}
       />
-      <BlueButton
+      <button
         style={{ position: "relative" }}
         onClick={async () => {
           addAdminWrite?.();
         }}
+        className="btn"
         disabled={
           !isConnected ||
           newAdminAddress.length === 0 ||
@@ -39,33 +40,22 @@ export const AddAdmin = () => {
         }
       >
         Add admin
-      </BlueButton>
+      </button>
     </InputWithButtonContainer>
   );
 };
 
-const BlueButton = styled.button`
-  background: #61c6ff;
-  border: none;
-  color: #0f5a9f;
-  border: 2px solid rgba(15, 90, 159);
-  &:disabled {
-    background: rgba(97, 198, 255, 0.4);
-    border-color: rgba(15, 90, 159, 0.4);
-    color: rgba(15, 90, 159, 0.4);
-  }
-`;
 const StyledInput = styled(TextInput)`
   display: flex;
   flex: 1;
+  color: #fff;
 `;
 
 const InputWithButtonContainer = styled.div`
   display: flex;
   align-items: center;
-  border-radius: 4px;
   gap: 16px;
   padding: 8px;
-  border: 2px solid #e3cca0;
+  border: 1px solid rgb(53, 71, 73);
   position: relative;
 `;
