@@ -8,13 +8,18 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 const { chains, provider } = configureChains(
-  [chain.mainnet],
+  [chain.foundry],
   [
-    // @ts-ignore
-    alchemyProvider({ alchemyId: import.meta.env.ALCHEMY_ID }),
-    publicProvider(),
+    // alchemyProvider({ alchemyId: import.meta.env.ALCHEMY_ID }),
+    // publicProvider(),
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: `http://localhost:8545`,
+      }),
+    }),
   ]
 );
 

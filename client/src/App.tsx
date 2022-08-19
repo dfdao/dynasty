@@ -15,6 +15,7 @@ function App() {
   const [editingRound, setEditingRound] = useState<
     ScoringInterface | undefined
   >(undefined);
+
   return (
     <Container>
       <Modal

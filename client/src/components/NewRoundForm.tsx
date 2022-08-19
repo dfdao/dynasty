@@ -7,12 +7,19 @@ import {
 } from "../constants";
 import styled from "styled-components";
 import DateTimePicker from "react-datetime-picker";
-import { useAccount, useSignMessage } from "wagmi";
+import {
+  useAccount,
+  useContractWrite,
+  usePrepareContractWrite,
+  useSignMessage,
+} from "wagmi";
 import { useSWRConfig } from "swr";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
 import { addRound, editRound } from "../lib/network";
 import { ScoringInterface } from "../types";
+import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
+import { registry } from "@dfdao/gp-registry/deployment.json";
 
 export const DateTimeField = ({ ...props }: any) => {
   const { setFieldValue } = useFormikContext();
@@ -31,7 +38,6 @@ export const DateTimeField = ({ ...props }: any) => {
 export const NewRoundForm: React.FC<{
   editCurrentRound?: ScoringInterface;
 }> = ({ editCurrentRound }) => {
-  const { mutate } = useSWRConfig();
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage({
     message: editCurrentRound
@@ -41,31 +47,50 @@ export const NewRoundForm: React.FC<{
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
   );
+  const { write: addRound } = useContractWrite({
+    mode: "recklesslyUnprepared",
+    addressOrName: registry,
+    contractInterface: abi,
+    functionName: "addGrandPrix",
+  });
 
   return (
     <Formik
       initialValues={editCurrentRound ?? DEFAULT_SCORING_CONFIG}
       onSubmit={async (values) => {
-        if (submissionError) setSubmissionError(undefined);
-        const signedMessage = await signMessageAsync();
-        mutate(`${import.meta.env.VITE_SERVER_URL}/rounds`, async () => {
-          let res: Response;
-          if (editCurrentRound) {
-            res = await editRound(values, address, signedMessage);
-          } else {
-            res = await addRound(values, address, signedMessage);
-          }
-          const responseError = await res.text();
-          console.log(res);
-          console.log(responseError);
-          if (res.status !== 200 && res.status !== 201) {
-            console.log(responseError);
-            setSubmissionError(responseError);
-          }
+        const v = {
+          startTime: values.startTime,
+          endTime: values.endTime,
+          configHash: values.configHash,
+          timeWeight: 1,
+          scoreWeight: 1,
+          silverWeight: 1,
+          parentAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        };
+        console.log("args", [...Object.values(v)]);
+        addRound({
+          recklesslySetUnpreparedArgs: [...Object.values(v)],
         });
+        // if (submissionError) setSubmissionError(undefined);
+        // const signedMessage = await signMessageAsync();
+        // mutate(`${import.meta.env.VITE_SERVER_URL}/rounds`, async () => {
+        //   let res: Response;
+        //   if (editCurrentRound) {
+        //     res = await editRound(values, address, signedMessage);
+        //   } else {
+        //     res = await addRound(values, address, signedMessage);
+        //   }
+        //   const responseError = await res.text();
+        //   console.log(res);
+        //   console.log(responseError);
+        //   if (res.status !== 200 && res.status !== 201) {
+        //     console.log(responseError);
+        //     setSubmissionError(responseError);
+        //   }
+        // });
       }}
       validate={async (values) => {
-        const errors = {} as any;
+        const errors = {} as { [key: string]: string };
 
         // Validate configHash
         const configHashStartsWith0x = values.configHash.startsWith("0x");
