@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
-import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
+import { abi } from "@dfdao/gp-registry/abi/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
 import { TextInput } from "./NewRoundForm";
 

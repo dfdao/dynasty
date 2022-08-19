@@ -3,7 +3,7 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { formatStartTime } from "../lib/date";
 import { getConfigName } from "../lib/getConfigName";
 import { RoundItem, TableCell } from "./RoundList";
-import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
+import { abi } from "@dfdao/gp-registry/abi/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
 import { RoundResponse } from "../types";
 

@@ -1,7 +1,7 @@
 import "../App.css";
 import styled from "styled-components";
 import { useContractRead } from "wagmi";
-import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
+import { abi } from "@dfdao/gp-registry/abi/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
 import { ErrorBanner } from "./ErrorBanner";
 import { constants, ethers, utils } from "ethers";

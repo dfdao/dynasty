@@ -6,7 +6,7 @@ import DateTimePicker from "react-datetime-picker";
 import { useAccount, useContractWrite } from "wagmi";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
-import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
+import { abi } from "@dfdao/gp-registry/abi/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
 import { RoundInterface } from "../types";
 
