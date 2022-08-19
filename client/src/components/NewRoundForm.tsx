@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Formik, useField, useFormikContext } from "formik";
 import { DEFAULT_SCORING_CONFIG } from "../constants";
 import styled from "styled-components";
 import DateTimePicker from "react-datetime-picker";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useAccount, useContractWrite } from "wagmi";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
 import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";

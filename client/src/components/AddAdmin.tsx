@@ -5,7 +5,9 @@ import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
 import { TextInput } from "./NewRoundForm";
 
-export const AddAdmin = () => {
+export const AddAdmin: React.FC<{ onError: (error: string) => void }> = ({
+  onError,
+}) => {
   const { isConnected } = useAccount();
 
   const [newAdminAddress, setNewAdminAddress] = useState<string>("");
@@ -17,7 +19,10 @@ export const AddAdmin = () => {
     args: [newAdminAddress, true],
   });
 
-  const { writeAsync: addAdminWrite } = useContractWrite(config);
+  const { writeAsync: addAdminWrite } = useContractWrite({
+    ...config,
+    onError: (error) => onError(error.message),
+  });
 
   return (
     <InputWithButtonContainer>

@@ -1,5 +1,4 @@
 import "../App.css";
-import styled from "styled-components";
 import { useContractRead } from "wagmi";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
@@ -49,7 +48,7 @@ export const AdminManager: React.FC = () => {
           ))}
       </tbody>
       <div style={{ height: "16px" }} />
-      <AddAdmin />
+      <AddAdmin onError={(error) => setSubmissionError(error)} />
     </RoundsContainer>
   );
 };
