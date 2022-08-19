@@ -2,9 +2,10 @@ import React from "react";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { formatStartTime } from "../lib/date";
 import { getConfigName } from "../lib/getConfigName";
-import { RoundItem, RoundResponse, TableCell } from "./RoundList";
+import { RoundItem, TableCell } from "./RoundList";
 import { abi } from "@dfdao/gp-registry/out/Registry.sol/Registry.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
+import { RoundResponse } from "../types";
 
 export const RoundRow: React.FC<{ round: RoundResponse }> = ({ round }) => {
   const { isConnected } = useAccount();

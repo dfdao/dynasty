@@ -6,14 +6,7 @@ import { registry } from "@dfdao/gp-registry/deployment.json";
 import { ErrorBanner } from "./ErrorBanner";
 import { constants, ethers, utils } from "ethers";
 import { RoundRow } from "./RoundRow";
-
-export interface RoundResponse {
-  configHash: string;
-  startTime: ethers.BigNumber;
-  endTime: ethers.BigNumber;
-  parentAddress: string;
-  seasonId: ethers.BigNumber;
-}
+import { RoundResponse } from "../types";
 
 export const RoundList: React.FC = () => {
   const {
