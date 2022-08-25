@@ -12,6 +12,16 @@ import {
 import { Chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
+const localHost: Chain = {
+  id: 31337,
+  name: "Anvil",
+  network: "Local Node",
+  rpcUrls: {
+    default: "http://localhost:8545",
+  },
+  testnet: true,
+};
+
 const optimisticGnosis: Chain = {
   id: 300,
   name: "Optimism on Gnosis",
@@ -34,15 +44,24 @@ const optimisticGnosis: Chain = {
 };
 
 const { chains, provider } = configureChains(
-  [optimisticGnosis],
+  [localHost, optimisticGnosis],
   [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: `https://optimism.gnosischain.com`,
+        http:
+          chain.id === localHost.id
+            ? localHost.rpcUrls.default
+            : optimisticGnosis.rpcUrls.default,
+      }),
+    }),
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: `http://localhost:8545`,
       }),
     }),
   ]
 );
+console.log(`chains`, chains);
 
 const { connectors } = getDefaultWallets({
   appName: "dfdao Dynasty",

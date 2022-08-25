@@ -2,7 +2,9 @@ import "../App.css";
 import { useContractRead } from "wagmi";
 import { useState } from "react";
 import { ErrorBanner } from "./ErrorBanner";
-import { abi } from "@dfdao/gp-registry/abi/Registry.json";
+import { abi } from "../../../eth/out/Registry.sol/Registry.json";
+// This will only work locally.
+// import { transactions } from "../../../eth/broadcast/Deploy.s.sol/31337/run-latest.json";
 import { registry } from "@dfdao/gp-registry/deployment.json";
 import { AdminRow } from "./AdminRow";
 import { AddAdmin } from "./AddAdmin";
@@ -13,6 +15,11 @@ export const AdminManager: React.FC = () => {
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
   );
+
+  // const registry = transactions.find(t => t.contractName == "Registry")
+  // const registryAddress = registry?.contractAddress;
+  // console.log(registryAddress);
+  // if(!registryAddress) throw new Error ("Registry address is undefined");
 
   const {
     data: adminData,
@@ -37,9 +44,9 @@ export const AdminManager: React.FC = () => {
       )}
       <thead>
         <tbody>
-        <tr>
-          <TableHeader>Address</TableHeader>
-        </tr>
+          <tr>
+            <TableHeader>Address</TableHeader>
+          </tr>
         </tbody>
       </thead>
       <tbody>

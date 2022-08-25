@@ -13,8 +13,7 @@ contract NFTTest is Test {
 
     function setUp() public {
         // Deploy NFT contract
-
-        nft = new NFT("NFT_tutorial", "TUT", "/Users/0x/darkforest/dfdao/arena/gp-registry/images/cutie.png");
+        nft = new NFT("NFT_tutorial", "TUT");
     }
 
     function testURI() public {

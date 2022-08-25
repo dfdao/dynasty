@@ -5,11 +5,14 @@ import "forge-std/Script.sol";
 import "../src/Registry.sol";
 import "../src/NFT.sol";
 
-contract DeployRegistry is Script {
+contract Deploy is Script {
     function run() public {
         vm.broadcast();
         Registry registry = new Registry();
-
+        vm.stopBroadcast();
+        
+        vm.broadcast();
+        NFT nft = new NFT("dfdao", "DFD");
         vm.stopBroadcast();
     }
 }
