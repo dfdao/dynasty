@@ -29,10 +29,6 @@ function MintNFT() {
   );
 }
 
-export const Body: React.FC<{ mint: boolean }> = ({ mint }) => {
-  return mint ? <MintNFT /> : <NewGrandPrix />;
-};
-
 function App() {
   const [mint, setMint] = useState(false);
 
@@ -45,7 +41,7 @@ function App() {
       <Button onClick={() => setMint(!mint)}>
         {mint ? "Create Round" : "Mint NFT"}
       </Button>
-      <Body mint={mint} />
+      {mint ? <MintNFT /> : <NewGrandPrix />}
     </Container>
   );
 }
