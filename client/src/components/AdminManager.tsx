@@ -36,15 +36,17 @@ export const AdminManager: React.FC = () => {
         </ErrorBanner>
       )}
       <thead>
+        <tbody>
         <tr>
           <TableHeader>Address</TableHeader>
         </tr>
+        </tbody>
       </thead>
       <tbody>
         {adminData
           .filter((a) => a !== ethers.constants.AddressZero)
           .map((admin) => (
-            <AdminRow admin={admin} />
+            <AdminRow key={admin} admin={admin} />
           ))}
       </tbody>
       <div style={{ height: "16px" }} />
