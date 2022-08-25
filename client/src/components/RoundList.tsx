@@ -2,26 +2,19 @@ import "../App.css";
 import styled from "styled-components";
 import { useContractRead } from "wagmi";
 import { abi } from "@dfdao/gp-registry/abi/Registry.json";
-// import { abi } from "../../../eth/out/Registry.sol/Registry.json";
-import { registry } from "@dfdao/gp-registry/deployment.json";
-import { transactions } from "../../../eth/broadcast/Deploy.s.sol/31337/run-latest.json";
+import { registry } from "../../../eth/deployment.json";
 import { ErrorBanner } from "./ErrorBanner";
 import { constants, ethers, utils } from "ethers";
 import { RoundRow } from "./RoundRow";
 import { RoundResponse } from "../types";
 
 export const RoundList: React.FC = () => {
-  // const registry = transactions.find(t => t.contractName == "Registry")
-  // const registryAddress = registry?.contractAddress;
-  // console.log(`roundlist address`, registryAddress);
-  // if(!registryAddress) throw new Error ("Registry address is undefined");
-
   const {
     data: roundData,
     isError,
     isLoading,
   } = useContractRead({
-    addressOrName: registry, // registryAddress,
+    addressOrName: registry,
     contractInterface: abi,
     functionName: "getAllGrandPrix",
     watch: true,

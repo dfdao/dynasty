@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+} from "wagmi";
 import { abi } from "@dfdao/gp-registry/abi/Registry.json";
-import { registry } from "@dfdao/gp-registry/deployment.json";
+import { registry } from "../../../eth/deployment.json";
+
 import { TextInput } from "./NewRoundForm";
 
 export const AddAdmin: React.FC<{ onError: (error: string) => void }> = ({
   onError,
 }) => {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
 
   const [newAdminAddress, setNewAdminAddress] = useState<string>("");
 
