@@ -22,6 +22,8 @@ contract NFT is ERC721 {
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
+        admins.push(msg.sender);
+        isAdmin[msg.sender] = true;
     }
 
     /*
@@ -103,6 +105,17 @@ contract NFT is ERC721 {
             revert NonExistentTokenURI();
         }
         return tokenURIs[tokenId];
+    }
+    function bulkTokenURI(uint256[] memory tokenIds)
+        public
+        view
+        returns (string[] memory)
+    {
+        string[] memory tokenURIList = new string[](tokenIds.length);
+        for(uint256 i = 0; i <= tokenIds.length; i++) {
+            tokenURIList[i] = tokenURI(tokenIds[i]);
+        }
+        return tokenURIList;
     }
 
 }

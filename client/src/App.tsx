@@ -27,7 +27,7 @@ function MintNFT() {
   return (
     <>
       <Title>Mint Reward</Title>
-      {/* <NFTDisplay/> */}
+      <NFTDisplay />
       <NewNftForm />
     </>
   );
