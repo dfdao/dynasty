@@ -1,40 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, useField, useFormikContext } from "formik";
-import { DEFAULT_SCORING_CONFIG } from "../constants";
+import { DEFAULT_NFT_CONFIG, DEFAULT_SCORING_CONFIG } from "../constants";
 import styled from "styled-components";
 import DateTimePicker from "react-datetime-picker";
 import { useAccount, useContractWrite } from "wagmi";
-import { configHashGraphQuery } from "../lib/graphql";
+import { BLOCK_EXPLORER_URL, configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
-import { abi } from "../../../eth/out/Registry.sol/Registry.json";
-import { registry } from "../../../eth/deployment.json";
-import { RoundInterface } from "../types";
+import { abi } from "../../../eth/out/NFT.sol/NFt.json";
+import { nft } from "../../../eth/deployment.json";
+import { MintInterface, RoundInterface } from "../types";
+import { ImageUpload } from "./ImageUpload";
+import { storeNFTMeta } from "../lib/nft";
 
-export const DateTimeField = ({ ...props }: any) => {
-  const { setFieldValue } = useFormikContext();
-  const [field] = useField(props);
-  return (
-    <Picker
-      {...props}
-      value={new Date(field.value)}
-      onChange={(val) => {
-        setFieldValue(field.name, val.getTime());
-      }}
-    />
-  );
-};
-
-export const NewRoundForm: React.FC = () => {
+export const NewNftForm: React.FC = () => {
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
   );
+
+  const [image, setImage] = useState<Blob>();
+  const [uri, setUri] = useState("");
+  const [nftUri, setUploading] = useState(false);
+
   const { isConnected } = useAccount();
 
-  const { write: addRound } = useContractWrite({
+  const {
+    data,
+    isLoading,
+    isSuccess: mintSuccess,
+    write: mintTo,
+  } = useContractWrite({
     mode: "recklesslyUnprepared",
-    addressOrName: registry,
+    addressOrName: nft,
     contractInterface: abi,
-    functionName: "addGrandPrix",
+    functionName: "mintTo",
     onError: (error) => {
       setSubmissionError(error.message);
     },
@@ -42,19 +40,26 @@ export const NewRoundForm: React.FC = () => {
 
   return (
     <Formik
-      initialValues={DEFAULT_SCORING_CONFIG}
-      onSubmit={async (values: RoundInterface) => {
-        addRound({
-          recklesslySetUnpreparedArgs: [
-            values.startTime,
-            values.endTime,
-            values.configHash,
-            values.parentAddress,
-            values.seasonId,
-          ],
+      initialValues={DEFAULT_NFT_CONFIG}
+      onSubmit={async (values: MintInterface) => {
+        if (!image) {
+          setSubmissionError("Image is required");
+          throw new Error("Image is required");
+        }
+
+        setSubmissionError("");
+        setUploading(true);
+        // Also need to update metadata
+        const uri = await storeNFTMeta(image, values);
+        setUploading(false);
+        console.log(values, image);
+        mintTo({
+          recklesslySetUnpreparedArgs: [values.playerAddress, uri],
         });
+        setUri(uri);
       }}
       validate={async (values) => {
+        console.log(values);
         const errors = {} as { [key: string]: string };
 
         // Validate configHash
@@ -73,22 +78,14 @@ export const NewRoundForm: React.FC = () => {
           errors["configHash"] = "Config hash is required.";
         }
 
-        // validate start and end times
-        if (values.startTime > values.endTime) {
-          errors["startTime"] = "Start time must be before end time.";
-        }
-        if (values.startTime === values.endTime) {
-          errors["startEndEqual"] =
-            "Start time and end time must be different.";
-        }
         if (!values.seasonId) {
           errors["seasonId"] = "Season is required.";
         }
-        if (!values.parentAddress) {
-          errors["parentAddress"] = "Map address is required.";
+        if (!values.playerAddress) {
+          errors["playerAddress"] = "Map address is required.";
         }
-        if (!values.parentAddress.startsWith("0x")) {
-          errors["parentAddressPrefix"] = "Map address must start with 0x";
+        if (!values.playerAddress.startsWith("0x")) {
+          errors["playerAddressPrefix"] = "Map address must start with 0x";
         }
         return errors;
       }}
@@ -102,17 +99,7 @@ export const NewRoundForm: React.FC = () => {
               gap: "1rem",
               width: "100%",
             }}
-          >
-            <FormItem>
-              <Label>Start Time</Label>
-              <DateTimeField name="startTime" />
-            </FormItem>
-            <FormItem>
-              <Label>End Time</Label>
-              <DateTimeField name="endTime" />
-            </FormItem>
-          </div>
-          <Label>Dates are in your current time zone.</Label>
+          ></div>
           <FormItem>
             <Label>Config Hash</Label>
             <TextInput
@@ -125,12 +112,12 @@ export const NewRoundForm: React.FC = () => {
             />
           </FormItem>
           <FormItem>
-            <Label>Map Address</Label>
+            <Label>Player Address</Label>
             <TextInput
               type="text"
-              id="parentAddress"
-              name="parentAddress"
-              value={formik.values.parentAddress}
+              id="playerAddress"
+              name="playerAddress"
+              value={formik.values.playerAddress}
               onChange={formik.handleChange}
               placeholder="0xb96f4057fc8d90d47f0265414865f998fe356da1"
             />
@@ -148,12 +135,16 @@ export const NewRoundForm: React.FC = () => {
             />
           </FormItem>
           <FormItem>
+            <Label>Image</Label>
+            <ImageUpload setImage={(e: any) => setImage(e)} />
+          </FormItem>
+          <FormItem>
             <button
               disabled={!isConnected || Object.keys(formik.errors).length > 0}
               className="btn"
               type="submit"
             >
-              Submit new round
+              Mint
             </button>
             {Object.keys(formik.errors).length > 0 && isConnected && (
               <ErrorBanner>
@@ -172,6 +163,19 @@ export const NewRoundForm: React.FC = () => {
                 Connect wallet. Only a community admin can add/remove new
                 rounds.
               </span>
+            )}
+            {nftUri && <span>Uploading metadata to IPFS...</span>}
+            {isLoading && <span>Submitting transaction...</span>}
+            {uri && mintSuccess && (
+              <div>
+                <a href={`${BLOCK_EXPLORER_URL}/${data?.hash}`} target="_blank">
+                  Minted
+                </a>{" "}
+                NFT with{" "}
+                <a href={uri} target="_blank">
+                  metadata
+                </a>
+              </div>
             )}
           </FormItem>
         </Form>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-export const ImageUpload = ({ setImage }) => {
-  console.log(`onSelect`, setImage);
+export const ImageUpload: React.FC<{ setImage: (e: any) => void }> = ({
+  setImage,
+}) => {
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState<string>();
 
@@ -20,6 +21,7 @@ export const ImageUpload = ({ setImage }) => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
+  // @ts-expect-error @error event type
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
       setSelectedFile(undefined);

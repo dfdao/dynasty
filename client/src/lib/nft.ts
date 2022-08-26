@@ -3,34 +3,30 @@ import meta from "./grandPrixMeta";
 import mime from "mime";
 import path from "path";
 import { NFTStorage } from "nft.storage";
+import { MintInterface } from "../types";
+import { getConfigName } from "@dfdao/procedural";
 
 const API_KEY = import.meta.env.VITE_NFT_STORAGE_KEY;
 
-// async function fileFromPath(filePath: string) {
-//   const content = await fs.promises.readFile(filePath)
-//   const type = mime.getType(filePath)
-//   return new File([content], path.basename(filePath), { type })
-// }
-// async function readFile(filePath: string) {
-//   if (filePath) {
-//     const reader = new FileReader();
-//     reader.readAsText(filePath, "UTF-8");
-//     reader.onload = (evt) => {
-//       document.getElementById("fileContents").innerHTML = evt.target.result;
-//     };
-//     reader.onerror = (evt) => {
-//       document.getElementById("fileContents").innerHTML = "error reading file";
-//     };
-//   }
-// }
+export async function storeNFTMeta(
+  image: Blob | File,
+  inputs: MintInterface
+): Promise<string> {
+  // will change meta object itself bc pointer
+  meta.attributes.map((a) => {
+    if (a.trait_type == "Config Hash") {
+      a.value = inputs.configHash;
+    } else if (a.trait_type == "Grand Prix") {
+      a.value = getConfigName(inputs.configHash);
+    } else {
+      return a;
+    }
+  });
 
-export async function storeExampleNFT(image: Blob | File): Promise<string> {
-  // const image = await fileFromPath(imagePath)
   const nft = {
     image, // use image Blob as `image` field
     ...meta,
   };
-  console.log(image instanceof Blob);
 
   if (!API_KEY) throw new Error("no NFT STORAGE key found");
   const client = new NFTStorage({ token: API_KEY });
