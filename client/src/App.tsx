@@ -10,7 +10,7 @@ function NewGrandPrix() {
   return (
     <>
       <Title>Create new Round</Title>
-      {/* <NewRoundForm /> */}
+      <NewRoundForm />
       <div style={{ height: "2rem" }} />
       <Title>All rounds</Title>
       <RoundList />

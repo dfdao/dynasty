@@ -6,7 +6,7 @@ import {
   useContractWrite,
   usePrepareContractWrite,
 } from "wagmi";
-import { abi } from "@dfdao/gp-registry/abi/Registry.json";
+import { abi } from "../../../eth/abi/Registry.json";
 import { registry } from "../../../eth/deployment.json";
 
 import { TextInput } from "./NewRoundForm";
@@ -27,7 +27,7 @@ export const AddAdmin: React.FC<{ onError: (error: string) => void }> = ({
 
   const { writeAsync: addAdminWrite } = useContractWrite({
     ...config,
-    onError: (error) => onError(error.message),
+    onError: (error) => onError(`adminWrite ${error.message}`),
   });
 
   return (

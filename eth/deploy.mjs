@@ -1,7 +1,4 @@
 #!/usr/bin/env zx
-function escapeShell(cmd) {
-  return '"' + cmd.replace(/(["'$`\\])/g, "\\$1") + '"';
-}
 
 function parseForgeDeploy(output) {
   const parsed = output.split("\n");
@@ -13,16 +10,30 @@ function parseForgeDeploy(output) {
   return address;
 }
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
-const RPC_URL = process.env.RPC_URL;
+const main = async () => {
+  const PRIVATE_KEY = process.env.PRIVATE_KEY;
+  const RPC_URL = process.env.RPC_URL;
+  const names = ['Registry', 'NFT'];
 
-let deployments = {};
+  let deployments = {};
 
-const { stdout: deploymentOutput } =
-  await $`forge script script/Registry.s.sol:DeployRegistry --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --legacy --broadcast`;
-const registryAddress = parseForgeDeploy(deploymentOutput);
-const DEPLOYMENT = {
-  registry: registryAddress,
-};
+  for await (const name of names) {
+    const { stdout: deploymentOutput } =
+      await $`forge script script/${name}.s.sol:Deploy${name} --rpc-url ${RPC_URL} --private-key ${PRIVATE_KEY} --legacy --broadcast`;
+    const registryAddress = parseForgeDeploy(deploymentOutput);
+    deployments[name.toLowerCase()] = registryAddress;
+  }
 
-fs.writeFileSync("deployment.json", JSON.stringify(DEPLOYMENT));
+  console.log(`RPC`, RPC_URL);
+  if(RPC_URL && RPC_URL == "http://localhost:8545") {
+    deployments['chainId'] = '31337';
+  }
+  else {
+    deployments['chainId'] = '300';
+  }
+  
+  console.log(deployments);
+
+  fs.writeFileSync("deployment.json", JSON.stringify(deployments));
+}
+main().catch(e => console.log(e));

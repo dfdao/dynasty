@@ -9,8 +9,15 @@ import {
   getDefaultWallets,
   RainbowKitProvider,
 } from "@rainbow-me/rainbowkit";
-import { Chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import {
+  chain,
+  Chain,
+  configureChains,
+  createClient,
+  WagmiConfig,
+} from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { chainId } from "../../eth/deployment.json";
 
 const localHost: Chain = {
   id: 31337,
@@ -43,25 +50,23 @@ const optimisticGnosis: Chain = {
   testnet: false,
 };
 
-const { chains, provider } = configureChains(
-  [localHost, optimisticGnosis],
-  [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http:
-          chain.id === localHost.id
-            ? localHost.rpcUrls.default
-            : optimisticGnosis.rpcUrls.default,
-      }),
+const chainFromId = chainId == "31337" ? [localHost] : [optimisticGnosis];
+
+const { chains, provider } = configureChains(chainFromId, [
+  jsonRpcProvider({
+    rpc: (chain) => ({
+      http:
+        chain.id === localHost.id
+          ? localHost.rpcUrls.default
+          : optimisticGnosis.rpcUrls.default,
     }),
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `http://localhost:8545`,
-      }),
+  }),
+  jsonRpcProvider({
+    rpc: (chain) => ({
+      http: `http://localhost:8545`,
     }),
-  ]
-);
-console.log(`chains`, chains);
+  }),
+]);
 
 const { connectors } = getDefaultWallets({
   appName: "dfdao Dynasty",

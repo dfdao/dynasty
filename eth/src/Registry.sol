@@ -43,6 +43,7 @@ contract Registry {
     }
 
     function setAdmin(address admin, bool allowed) public onlyContractOwner {
+        require(admin != address(0), "Can't add zero address");
         if (allowed) {
             // check if admin is already in admins array
             if (!isAdmin[admin]) {

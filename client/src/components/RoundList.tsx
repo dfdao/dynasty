@@ -1,7 +1,7 @@
 import "../App.css";
 import styled from "styled-components";
 import { useContractRead } from "wagmi";
-import { abi } from "@dfdao/gp-registry/abi/Registry.json";
+import { abi } from "../../../eth/abi/Registry.json";
 import { registry } from "../../../eth/deployment.json";
 import { ErrorBanner } from "./ErrorBanner";
 import { constants, ethers, utils } from "ethers";
@@ -19,7 +19,6 @@ export const RoundList: React.FC = () => {
     functionName: "getAllGrandPrix",
     watch: true,
   });
-  console.log(`grand prix error`, isError);
 
   if (!roundData || isLoading) return <div>Loading...</div>;
   if (
