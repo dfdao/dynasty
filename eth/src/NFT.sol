@@ -2,6 +2,7 @@
 pragma solidity >=0.8.10;
 
 import "solmate/tokens/ERC721.sol";
+import "forge-std/console.sol";
 
 error MintPriceNotPaid();
 error MaxSupply();
@@ -22,13 +23,14 @@ contract NFT is ERC721 {
         string memory _name,
         string memory _symbol
     ) ERC721(_name, _symbol) {
-        admins.push(msg.sender);
+        contractOwner = msg.sender;
         isAdmin[msg.sender] = true;
+        admins.push(msg.sender);
     }
 
     /*
-		Access Control
-		*/
+	    Access Control
+	*/
 
     modifier onlyAdmin() {
         require(isAdmin[msg.sender], "Not admin");
@@ -112,10 +114,22 @@ contract NFT is ERC721 {
         returns (string[] memory)
     {
         string[] memory tokenURIList = new string[](tokenIds.length);
-        for(uint256 i = 0; i <= tokenIds.length; i++) {
+        for(uint256 i = 0; i < tokenIds.length; i++) {
             tokenURIList[i] = tokenURI(tokenIds[i]);
         }
         return tokenURIList;
+    }
+    
+    function bulkOwner(uint256[] memory tokenIds)
+        public
+        view
+        returns (address[] memory)
+    {
+        address[] memory ownerList = new address[](tokenIds.length);
+        for(uint256 i = 0; i < tokenIds.length; i++) {
+            ownerList[i] = ownerOf(tokenIds[i]);
+        }
+        return ownerList;
     }
 
 }

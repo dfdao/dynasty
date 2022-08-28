@@ -12,7 +12,7 @@ import { MintInterface, RoundInterface } from "../types";
 import { ImageUpload } from "./ImageUpload";
 import { storeNFTMeta } from "../lib/nft";
 
-export const NewNftForm: React.FC = () => {
+export const NewNFT: React.FC = () => {
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
   );

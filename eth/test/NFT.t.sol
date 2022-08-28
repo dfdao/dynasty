@@ -10,19 +10,23 @@ contract NFTTest is Test {
 
     NFT private nft;
     string private tokenURI = "wee";
+    address public deployer = address(69);
 
     function setUp() public {
+        payable(deployer).transfer(100 ether);
+
+        vm.startPrank(deployer);
         // Deploy NFT contract
         nft = new NFT("NFT_tutorial", "TUT");
     }
 
     function testURI() public {
-        uint256 tokenId = nft.mintTo{value: 0.08 ether}(address(1),tokenURI);
-        console.log("tokenUri", nft.tokenURI(tokenId));
+        uint256 tokenId = nft.mintTo(address(1),tokenURI);
+        assertEq("wee", nft.tokenURI(tokenId));
     }
 
     function testMintNoPrice() public {
-        nft.mintTo(address(1),"");
+        nft.mintTo(address(1),tokenURI);
     }
 
     function testFailMintToZeroAddress() public {
@@ -30,7 +34,7 @@ contract NFTTest is Test {
     }
 
     function testNewMintOwnerRegistered() public {
-        nft.mintTo{value: 0.08 ether}(address(1),tokenURI);
+        nft.mintTo{value: 0.08 ether}(address(2),tokenURI);
         uint256 slotOfNewOwner = stdstore
             .target(address(nft))
             .sig(nft.ownerOf.selector)
@@ -42,27 +46,28 @@ contract NFTTest is Test {
                 (vm.load(address(nft), bytes32(abi.encode(slotOfNewOwner))))
             )
         );
-        assertEq(address(ownerOfTokenIdOne), address(1),tokenURI);
+        assertEq(address(ownerOfTokenIdOne), address(2),tokenURI);
     }
 
     function testBalanceIncremented() public {
-        nft.mintTo{value: 0.08 ether}(address(1),tokenURI);
-        uint256 slotBalance = stdstore
-            .target(address(nft))
-            .sig(nft.balanceOf.selector)
-            .with_key(address(1))
-            .find();
-
-        uint256 balanceFirstMint = uint256(
-            vm.load(address(nft), bytes32(slotBalance))
-        );
+        nft.mintTo{value: 0.08 ether}(address(2),tokenURI);
+        uint256 balanceFirstMint = nft.balanceOf(address(2));
         assertEq(balanceFirstMint, 1);
 
-        nft.mintTo{value: 0.08 ether}(address(1),tokenURI);
-        uint256 balanceSecondMint = uint256(
-            vm.load(address(nft), bytes32(slotBalance))
-        );
+        nft.mintTo{value: 0.08 ether}(address(2),tokenURI);
+        uint256 balanceSecondMint = nft.balanceOf(address(2));
         assertEq(balanceSecondMint, 2);
+
+        uint256[] memory args = new uint256[](2);
+
+        args[0] = nft.currentTokenId() - 1;
+        args[1] = nft.currentTokenId();
+        string[] memory res = new string[](args.length);
+        res = nft.bulkTokenURI(args);
+        for(uint i = 0; i < args.length; i++) {
+            console.log("uri", res[i]);
+            assertEq(nft.tokenURI(args[i]),res[i]);
+        }
     }
 
     function testSafeContractReceiver() public {
@@ -82,7 +87,6 @@ contract NFTTest is Test {
         vm.etch(address(1), bytes("mock code"));
         nft.mintTo{value: 0.08 ether}(address(1),tokenURI);
     }
-
 
 }
 

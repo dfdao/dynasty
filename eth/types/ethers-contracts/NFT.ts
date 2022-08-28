@@ -34,6 +34,7 @@ export interface NFTInterface extends utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "bulkMintTo(address[],string)": FunctionFragment;
+    "bulkOwner(uint256[])": FunctionFragment;
     "bulkTokenURI(uint256[])": FunctionFragment;
     "contractOwner()": FunctionFragment;
     "currentTokenId()": FunctionFragment;
@@ -60,6 +61,7 @@ export interface NFTInterface extends utils.Interface {
       | "approve"
       | "balanceOf"
       | "bulkMintTo"
+      | "bulkOwner"
       | "bulkTokenURI"
       | "contractOwner"
       | "currentTokenId"
@@ -95,6 +97,10 @@ export interface NFTInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "bulkMintTo",
     values: [PromiseOrValue<string>[], PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bulkOwner",
+    values: [PromiseOrValue<BigNumberish>[]]
   ): string;
   encodeFunctionData(
     functionFragment: "bulkTokenURI",
@@ -180,6 +186,7 @@ export interface NFTInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "bulkMintTo", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bulkOwner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "bulkTokenURI",
     data: BytesLike
@@ -328,6 +335,11 @@ export interface NFT extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[string[]]>;
+
     bulkTokenURI(
       tokenIds: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
@@ -437,6 +449,11 @@ export interface NFT extends BaseContract {
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  bulkOwner(
+    tokenIds: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
   bulkTokenURI(
     tokenIds: PromiseOrValue<BigNumberish>[],
     overrides?: CallOverrides
@@ -545,6 +562,11 @@ export interface NFT extends BaseContract {
       _tokenURI: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
+
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<string[]>;
 
     bulkTokenURI(
       tokenIds: PromiseOrValue<BigNumberish>[],
@@ -691,6 +713,11 @@ export interface NFT extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     bulkTokenURI(
       tokenIds: PromiseOrValue<BigNumberish>[],
       overrides?: CallOverrides
@@ -799,6 +826,11 @@ export interface NFT extends BaseContract {
       recipients: PromiseOrValue<string>[],
       _tokenURI: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     bulkTokenURI(

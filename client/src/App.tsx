@@ -5,8 +5,8 @@ import { RoundList } from "./components/RoundList";
 import { NewRoundForm } from "./components/NewRoundForm";
 import { AdminManager } from "./components/AdminManager";
 import { useEffect, useState } from "react";
-import { NFTDisplay } from "./components/NFT";
-import { NewNftForm } from "./components/NewNftForm";
+import { NewNFT } from "./components/NewNFTForm";
+import { ListNFT } from "./components/ListNFT";
 
 function NewGrandPrix() {
   return (
@@ -27,8 +27,9 @@ function MintNFT() {
   return (
     <>
       <Title>Mint Reward</Title>
-      <NFTDisplay />
-      <NewNftForm />
+      <NewNFT />
+      <Title>Reward History</Title>
+      <ListNFT />
     </>
   );
 }
