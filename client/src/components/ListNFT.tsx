@@ -38,9 +38,6 @@ export const ListNFT: React.FC = () => {
     args: [args],
   });
 
-  console.log(`tokenURIS`, uris);
-  console.log(`owners`, owners);
-
   const roundData =
     owners &&
     uris &&

@@ -52,14 +52,12 @@ export const NewNFT: React.FC = () => {
         // Also need to update metadata
         const uri = await storeNFTMeta(image, values);
         setUploading(false);
-        console.log(values, image);
         mintTo({
           recklesslySetUnpreparedArgs: [values.playerAddress, uri],
         });
         setUri(uri);
       }}
       validate={async (values) => {
-        console.log(values);
         const errors = {} as { [key: string]: string };
 
         // Validate configHash

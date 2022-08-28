@@ -50,9 +50,7 @@ const optimisticGnosis: Chain = {
   testnet: false,
 };
 
-console.log(typeof chainId);
 const chainFromId = chainId == "31337" ? [localHost] : [optimisticGnosis];
-console.log(`env`, import.meta.env.VITE_NFT_STORAGE_KEY);
 const { chains, provider } = configureChains(chainFromId, [
   jsonRpcProvider({
     rpc: (chain) => ({

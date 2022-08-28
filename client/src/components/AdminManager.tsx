@@ -27,7 +27,7 @@ export const AdminManager: React.FC = () => {
   if (!adminData || isLoading) return <div>Loading...</div>;
   if (adminData.length === 0) return <div>No admins found.</div>;
   if (isError) return <div>Couldn't load admins.</div>;
-  console.log(`get admins`, adminData);
+
   return (
     <RoundsContainer>
       {submissionError && (

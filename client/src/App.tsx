@@ -30,6 +30,8 @@ function MintNFT() {
       <NewNFT />
       <Title>Reward History</Title>
       <ListNFT />
+      <Title>Manage Mint Admins</Title>
+      <AdminManager />
     </>
   );
 }
