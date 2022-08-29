@@ -70,6 +70,16 @@ contract NFTTest is Test {
         }
     }
 
+   function testBulkMint() public {
+        address[] memory recipients = new address[](3);
+        recipients[0] = address(5);
+        recipients[1] = address(5);
+        recipients[2] = address(5);
+        nft.bulkMintTo(recipients, tokenURI);
+        uint256 balanceFirstMint = nft.balanceOf(address(5));
+        assertEq(balanceFirstMint, 3);
+    }
+
     function testSafeContractReceiver() public {
         Receiver receiver = new Receiver();
         nft.mintTo{value: 0.08 ether}(address(receiver),tokenURI);
