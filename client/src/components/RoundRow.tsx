@@ -3,8 +3,8 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { formatStartTime } from "../lib/date";
 import { getConfigName } from "../lib/getConfigName";
 import { RoundItem, TableCell } from "./RoundList";
-import { abi } from "../../../eth/out/Registry.sol/Registry.json";
-import { registry } from "../../../eth/deployment.json";
+import { abi } from "@dfdao/dynasty/abi/Registry.json";
+import { registry } from "@dfdao/dynasty/deployment.json";
 import { RoundResponse } from "../types";
 
 export const RoundRow: React.FC<{ round: RoundResponse }> = ({ round }) => {

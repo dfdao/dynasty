@@ -1,8 +1,8 @@
 import "../App.css";
 import styled from "styled-components";
 import { useContractRead } from "wagmi";
-import { abi } from "../../../eth/abi/NFT.json";
-import { nft } from "../../../eth/deployment.json";
+import { abi } from "@dfdao/dynasty/abi/NFT.json";
+import { nft } from "@dfdao/dynasty/deployment.json";
 import { NFTList } from "../types";
 import { NftRow } from "./NftRow";
 
@@ -38,7 +38,7 @@ export const ListNFT: React.FC = () => {
     args: [args],
   });
 
-  const roundData =
+  const tokenData =
     owners &&
     uris &&
     args &&
@@ -56,7 +56,7 @@ export const ListNFT: React.FC = () => {
       <div
         style={{ fontFamily: "Menlo, monospace", textTransform: "uppercase" }}
       >
-        No rounds found.
+        No rewards found.
       </div>
     );
   if (isError) return <div>Couldn't load previous rounds.</div>;
@@ -68,12 +68,13 @@ export const ListNFT: React.FC = () => {
           <TableHeader>ID</TableHeader>
           <TableHeader>Owner</TableHeader>
           <TableHeader>Meta</TableHeader>
+          <TableHeader>Image</TableHeader>
         </tr>
       </thead>
       <tbody>
-        {roundData &&
-          roundData.map((round: NFTList, i: number) => (
-            <NftRow token={round} key={i} />
+        {tokenData &&
+          tokenData.map((token: NFTList, i: number) => (
+            <NftRow token={token} key={i} />
           ))}
       </tbody>
     </RoundsContainer>

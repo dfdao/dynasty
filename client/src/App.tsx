@@ -18,7 +18,7 @@ function NewGrandPrix() {
       <RoundList />
       <div style={{ height: "2rem" }} />
       <Title>Manage Admins</Title>
-      <AdminManager />
+      <AdminManager nftContract={false} />
     </>
   );
 }
@@ -31,7 +31,7 @@ function MintNFT() {
       <Title>Reward History</Title>
       <ListNFT />
       <Title>Manage Mint Admins</Title>
-      <AdminManager />
+      <AdminManager nftContract={true} />
     </>
   );
 }

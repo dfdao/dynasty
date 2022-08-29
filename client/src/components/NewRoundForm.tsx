@@ -6,8 +6,8 @@ import DateTimePicker from "react-datetime-picker";
 import { useAccount, useContractWrite } from "wagmi";
 import { configHashGraphQuery } from "../lib/graphql";
 import { ErrorBanner } from "./ErrorBanner";
-import { abi } from "../../../eth/out/Registry.sol/Registry.json";
-import { registry } from "../../../eth/deployment.json";
+import { abi } from "@dfdao/dynasty/abi/Registry.json";
+import { registry } from "@dfdao/dynasty/deployment.json";
 import { RoundInterface } from "../types";
 
 export const DateTimeField = ({ ...props }: any) => {

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@darkforest_eth/hashing": "^6.7.29",
-    "@dfdao/gp-registry": "^1.0.0",
+    "@dfdao/dynasty": "^1.0.1",
     "@dfdao/procedural": "^6.7.31",
     "@rainbow-me/rainbowkit": "^0.4.4",
     "@types/mime": "^3.0.1",

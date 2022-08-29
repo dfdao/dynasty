@@ -1,12 +1,11 @@
 {
-  "name": "@dfdao/gp-registry",
+  "name": "@dfdao/dynasty",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "GPL-3.0",
   "files": [
     "src/**/*.sol",
-    "types/ethers-contracts",
-    "out/**/*.json",
+    "types/",
     "deployment.json",
     "abi/*.json"
   ],
@@ -21,21 +20,21 @@
     "typescript": "^4.7.4",
     "zx": "^7.0.8"
   },
-  "repository": "git+https://github.com/dfdao/gp-registry.git",
+  "repository": "git+https://github.com/dfdao/dynasty.git",
   "bugs": {
-    "url": "https://github.com/dfdao/gp-registry/issues"
+    "url": "https://github.com/dfdao/dynasty/issues"
   },
   "scripts": {
     "setup": "forge clean && forge build",
     "types": "yarn typechain --target ethers-v5 --out-dir typechain ./out/**/*.json --show-stack-traces",
     "test": "forge test",
     "format": "prettier --write src/**/*.sol && prettier --write src/*.sol",
-    "bindings": "typechain --target=ethers-v5 out/Registry.sol/Registry.json out/NFT.sol/NFT.json",
+    "bindings": "typechain --target=ethers-v5 --out-dir types out/Registry.sol/Registry.json out/NFT.sol/NFT.json",
     "deploy-local": "wait-on tcp:8545 forge script script/Registry.s.sol:DeployRegistry --rpc-url http://localhost:8545  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --broadcast",
     "export:abi": "forge build && cp out/Registry.sol/Registry.json abi/Registry.json && cp out/NFT.sol/NFT.json abi/NFT.json",
-    "deploy": "dotenv -- zx deploy.mjs && yarn bindings && yarn export:abi",
+    "deploy": "dotenv -- zx deploy.mjs && yarn bindings && yarn export:abi && yarn copy:client",
     "start:node": "anvil -m 'test test test test test test test test test test test junk'",
-    "start:deploy": ""
+    "copy:client": "cp deployment.json ../client/node_modules/@dfdao/dynasty && cp -r abi ../client/node_modules/@dfdao/dynasty && cp -r types ../client/node_modules/@dfdao/dynasty"
   },
   "dependencies": {
     "cross-fetch": "^3.1.5",

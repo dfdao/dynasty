@@ -6,21 +6,23 @@ import {
   useContractWrite,
   usePrepareContractWrite,
 } from "wagmi";
-import { abi } from "../../../eth/abi/Registry.json";
-import { registry } from "../../../eth/deployment.json";
+import { abi as RegistryAbi } from "@dfdao/dynasty/abi/Registry.json";
+import { abi as NFTAbi } from "@dfdao/dynasty/abi/NFT.json";
+import { registry, nft } from "@dfdao/dynasty/deployment.json";
 
 import { TextInput } from "./NewRoundForm";
 
-export const AddAdmin: React.FC<{ onError: (error: string) => void }> = ({
-  onError,
-}) => {
+export const AddAdmin: React.FC<{
+  nftContract: boolean;
+  onError: (error: string) => void;
+}> = ({ onError, nftContract }) => {
   const { isConnected, address } = useAccount();
 
   const [newAdminAddress, setNewAdminAddress] = useState<string>("");
 
   const { config } = usePrepareContractWrite({
-    addressOrName: registry,
-    contractInterface: abi,
+    addressOrName: nftContract ? nft : registry,
+    contractInterface: nftContract ? NFTAbi : RegistryAbi,
     functionName: "setAdmin",
     args: [newAdminAddress, true],
   });

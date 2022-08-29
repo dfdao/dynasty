@@ -13,6 +13,7 @@ function parseForgeDeploy(output) {
 const main = async () => {
   const PRIVATE_KEY = process.env.PRIVATE_KEY;
   const RPC_URL = process.env.RPC_URL;
+  
   const names = ['Registry', 'NFT'];
 
   let deployments = {};
@@ -24,13 +25,7 @@ const main = async () => {
     deployments[name.toLowerCase()] = registryAddress;
   }
 
-  console.log(`RPC`, RPC_URL);
-  if(RPC_URL && RPC_URL == "http://localhost:8545") {
-    deployments['chainId'] = '31337';
-  }
-  else {
-    deployments['chainId'] = '300';
-  }
+  deployments['chainId'] = process.env.CHAIN_ID;
   
   console.log(deployments);
 

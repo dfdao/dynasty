@@ -1,9 +1,8 @@
 import "../App.css";
 import styled from "styled-components";
 import { useContractRead } from "wagmi";
-import { abi } from "../../../eth/abi/Registry.json";
-import { registry } from "../../../eth/deployment.json";
-import { ErrorBanner } from "./ErrorBanner";
+import { abi } from "@dfdao/dynasty/abi/Registry.json";
+import { registry } from "@dfdao/dynasty/deployment.json";
 import { constants, ethers, utils } from "ethers";
 import { RoundRow } from "./RoundRow";
 import { RoundResponse } from "../types";

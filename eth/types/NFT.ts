@@ -9,6 +9,7 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -25,18 +26,28 @@ import type {
   TypedListener,
   OnEvent,
   PromiseOrValue,
-} from "../common";
+} from "./common";
 
-export interface ERC721Interface extends utils.Interface {
+export interface NFTInterface extends utils.Interface {
   functions: {
+    "admins(uint256)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "bulkMintTo(address[],string)": FunctionFragment;
+    "bulkOwner(uint256[])": FunctionFragment;
+    "bulkTokenURI(uint256[])": FunctionFragment;
+    "contractOwner()": FunctionFragment;
+    "currentTokenId()": FunctionFragment;
+    "getAllAdmins()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
+    "isAdmin(address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
+    "mintTo(address,string)": FunctionFragment;
     "name()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,bytes)": FunctionFragment;
+    "setAdmin(address,bool)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
@@ -46,14 +57,24 @@ export interface ERC721Interface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "admins"
       | "approve"
       | "balanceOf"
+      | "bulkMintTo"
+      | "bulkOwner"
+      | "bulkTokenURI"
+      | "contractOwner"
+      | "currentTokenId"
+      | "getAllAdmins"
       | "getApproved"
+      | "isAdmin"
       | "isApprovedForAll"
+      | "mintTo"
       | "name"
       | "ownerOf"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
+      | "setAdmin"
       | "setApprovalForAll"
       | "supportsInterface"
       | "symbol"
@@ -61,6 +82,10 @@ export interface ERC721Interface extends utils.Interface {
       | "transferFrom"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "admins",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -70,11 +95,43 @@ export interface ERC721Interface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "bulkMintTo",
+    values: [PromiseOrValue<string>[], PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bulkOwner",
+    values: [PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bulkTokenURI",
+    values: [PromiseOrValue<BigNumberish>[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "contractOwner",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "currentTokenId",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllAdmins",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getApproved",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
+    functionFragment: "isAdmin",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "isApprovedForAll",
+    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintTo",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -100,6 +157,10 @@ export interface ERC721Interface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "setAdmin",
+    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setApprovalForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
   ): string;
@@ -121,16 +182,37 @@ export interface ERC721Interface extends utils.Interface {
     ]
   ): string;
 
+  decodeFunctionResult(functionFragment: "admins", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bulkMintTo", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bulkOwner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "bulkTokenURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "contractOwner",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "currentTokenId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllAdmins",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isAdmin", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "mintTo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(
@@ -141,6 +223,7 @@ export interface ERC721Interface extends utils.Interface {
     functionFragment: "safeTransferFrom(address,address,uint256,bytes)",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setAdmin", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setApprovalForAll",
     data: BytesLike
@@ -203,12 +286,12 @@ export type TransferEvent = TypedEvent<
 
 export type TransferEventFilter = TypedEventFilter<TransferEvent>;
 
-export interface ERC721 extends BaseContract {
+export interface NFT extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: ERC721Interface;
+  interface: NFTInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -230,6 +313,11 @@ export interface ERC721 extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    admins(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     approve(
       spender: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -241,16 +329,49 @@ export interface ERC721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    bulkMintTo(
+      recipients: PromiseOrValue<string>[],
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[string[]]>;
+
+    bulkTokenURI(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<[string[]]>;
+
+    contractOwner(overrides?: CallOverrides): Promise<[string]>;
+
+    currentTokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    getAllAdmins(overrides?: CallOverrides): Promise<[string[]]>;
+
     getApproved(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    isAdmin(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     isApprovedForAll(
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    mintTo(
+      recipient: PromiseOrValue<string>,
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
@@ -274,6 +395,12 @@ export interface ERC721 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setAdmin(
+      admin: PromiseOrValue<string>,
+      allowed: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -288,7 +415,7 @@ export interface ERC721 extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
     tokenURI(
-      id: PromiseOrValue<BigNumberish>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
@@ -299,6 +426,11 @@ export interface ERC721 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  admins(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   approve(
     spender: PromiseOrValue<string>,
@@ -311,16 +443,49 @@ export interface ERC721 extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  bulkMintTo(
+    recipients: PromiseOrValue<string>[],
+    _tokenURI: PromiseOrValue<string>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  bulkOwner(
+    tokenIds: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
+  bulkTokenURI(
+    tokenIds: PromiseOrValue<BigNumberish>[],
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
+  contractOwner(overrides?: CallOverrides): Promise<string>;
+
+  currentTokenId(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getAllAdmins(overrides?: CallOverrides): Promise<string[]>;
+
   getApproved(
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  isAdmin(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   isApprovedForAll(
     arg0: PromiseOrValue<string>,
     arg1: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  mintTo(
+    recipient: PromiseOrValue<string>,
+    _tokenURI: PromiseOrValue<string>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -344,6 +509,12 @@ export interface ERC721 extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setAdmin(
+    admin: PromiseOrValue<string>,
+    allowed: PromiseOrValue<boolean>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setApprovalForAll(
     operator: PromiseOrValue<string>,
     approved: PromiseOrValue<boolean>,
@@ -358,7 +529,7 @@ export interface ERC721 extends BaseContract {
   symbol(overrides?: CallOverrides): Promise<string>;
 
   tokenURI(
-    id: PromiseOrValue<BigNumberish>,
+    tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -370,6 +541,11 @@ export interface ERC721 extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    admins(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     approve(
       spender: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -381,16 +557,49 @@ export interface ERC721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    bulkMintTo(
+      recipients: PromiseOrValue<string>[],
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber[]>;
+
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    bulkTokenURI(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    contractOwner(overrides?: CallOverrides): Promise<string>;
+
+    currentTokenId(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAllAdmins(overrides?: CallOverrides): Promise<string[]>;
+
     getApproved(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    isAdmin(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     isApprovedForAll(
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    mintTo(
+      recipient: PromiseOrValue<string>,
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -414,6 +623,12 @@ export interface ERC721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setAdmin(
+      admin: PromiseOrValue<string>,
+      allowed: PromiseOrValue<boolean>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -428,7 +643,7 @@ export interface ERC721 extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<string>;
 
     tokenURI(
-      id: PromiseOrValue<BigNumberish>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -476,6 +691,11 @@ export interface ERC721 extends BaseContract {
   };
 
   estimateGas: {
+    admins(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     approve(
       spender: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -487,8 +707,35 @@ export interface ERC721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    bulkMintTo(
+      recipients: PromiseOrValue<string>[],
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    bulkTokenURI(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    contractOwner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    currentTokenId(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAllAdmins(overrides?: CallOverrides): Promise<BigNumber>;
+
     getApproved(
       arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isAdmin(
+      arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -496,6 +743,12 @@ export interface ERC721 extends BaseContract {
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    mintTo(
+      recipient: PromiseOrValue<string>,
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
@@ -520,6 +773,12 @@ export interface ERC721 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setAdmin(
+      admin: PromiseOrValue<string>,
+      allowed: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -534,7 +793,7 @@ export interface ERC721 extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     tokenURI(
-      id: PromiseOrValue<BigNumberish>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -547,6 +806,11 @@ export interface ERC721 extends BaseContract {
   };
 
   populateTransaction: {
+    admins(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     approve(
       spender: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
@@ -558,8 +822,35 @@ export interface ERC721 extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    bulkMintTo(
+      recipients: PromiseOrValue<string>[],
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    bulkOwner(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    bulkTokenURI(
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    contractOwner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    currentTokenId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getAllAdmins(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getApproved(
       arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isAdmin(
+      arg0: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -567,6 +858,12 @@ export interface ERC721 extends BaseContract {
       arg0: PromiseOrValue<string>,
       arg1: PromiseOrValue<string>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    mintTo(
+      recipient: PromiseOrValue<string>,
+      _tokenURI: PromiseOrValue<string>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -591,6 +888,12 @@ export interface ERC721 extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setAdmin(
+      admin: PromiseOrValue<string>,
+      allowed: PromiseOrValue<boolean>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setApprovalForAll(
       operator: PromiseOrValue<string>,
       approved: PromiseOrValue<boolean>,
@@ -605,7 +908,7 @@ export interface ERC721 extends BaseContract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     tokenURI(
-      id: PromiseOrValue<BigNumberish>,
+      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
