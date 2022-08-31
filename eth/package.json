@@ -43,6 +43,7 @@
     "nft.storage": "^7.0.0",
     "node-fetch": "^3.2.10",
     "run-pty": "^3.0.0",
+    "solmate": "^6.5.0",
     "wait-on": "^6.0.1"
   }
 }

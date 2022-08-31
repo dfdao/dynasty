@@ -2174,6 +2174,11 @@ solidity-comments-extractor@^0.0.7:
   resolved "https://registry.yarnpkg.com/solidity-comments-extractor/-/solidity-comments-extractor-0.0.7.tgz#99d8f1361438f84019795d928b931f4e5c39ca19"
   integrity sha512-wciNMLg/Irp8OKGrh3S2tfvZiZ0NEyILfcRCXCD4mp7SgK/i9gzLfhY2hY7VMCQJ3kH9UB9BzNdibIVMchzyYw==
 
+solmate@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/solmate/-/solmate-6.5.0.tgz#c22d50451ba475ba2694b60f2d5d778506abaa44"
+  integrity sha512-B6pISDcja6QwbLN35FHLjTqnE3RlwgB8rV1EgCrfftEeWFHNz870yLpNoTEieaJFYYRaavcN5qzmWuYBQVErjQ==
+
 sparse-array@^1.3.1:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/sparse-array/-/sparse-array-1.3.2.tgz#0e1a8b71706d356bc916fe754ff496d450ec20b0"
