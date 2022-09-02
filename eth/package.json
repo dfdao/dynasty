@@ -13,6 +13,8 @@
     "@typechain/ethers-v5": "^10.1.0",
     "@types/node": "^18.0.3",
     "dotenv-cli": "^6.0.0",
+    "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#2da2f4a3470b87c94e5616c4297f3651179950ed",
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "ts-node": "^10.8.2",
