@@ -5,7 +5,7 @@ import { RoundList } from "./components/RoundList";
 import { NewRoundForm } from "./components/NewRoundForm";
 import { AdminManager } from "./components/AdminManager";
 import { useEffect, useState } from "react";
-import { NewNFT } from "./components/NewNFTForm";
+import { NewNFT } from "./components/NewNftForm";
 import { ListNFT } from "./components/ListNFT";
 
 function NewGrandPrix() {
