@@ -6,6 +6,9 @@ Includes the registry and reward contracts
 ```
 yarn add @dfdao/dyntasty
 ```
+# Deployment
+Create `.env.production` and put `PRIVATE_KEY=<your_p_key>`.
+Then run `yarn deploy:prod`
 
 # Usage
 
