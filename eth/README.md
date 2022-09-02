@@ -11,10 +11,10 @@ yarn add @dfdao/dyntasty
 
 ```ts
 // abis
-import { abi as RegistryAbi } from "@dfdao/dyntasy/abi/Registry.json";
-import { abi as NFTAbi } from "@dfdao/dyntasy/abi/NFT.json";
+import { abi as RegistryAbi } from "@dfdao/dynasty/abi/Registry.json";
+import { abi as NFTAbi } from "@dfdao/dynasty/abi/NFT.json";
 // Contract addresses
-import { registry, nft } from "@dfdao/gp-registry/deployment.json";
+import { registry, nft } from "@dfdao/dynasty/deployment.json";
 
 // assuming you're using wagmi.sh
 const {
