@@ -328,9 +328,9 @@
     ethers "^5.5.1"
 
 "@dfdao/dynasty@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@dfdao/dynasty/-/dynasty-1.0.1.tgz#8019c9b2a401e0837eec3db2a853475531389b4c"
-  integrity sha512-D4jJX0bnwFjC/+9UkGN+CuG1FU+sxGhYVGyyarKUSSju4pKTVoY3nGl12Wmxwi74+TpjsE4j8kp+U7JYjT0pFQ==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@dfdao/dynasty/-/dynasty-1.1.0.tgz#9ce2e41bd2ae539a4a2b848f0691cd17ff86a5bb"
+  integrity sha512-+Ho0CuobYi6RLmLMgUv2YH3h6hR6a3xnDa7TsbTtJwvee9JSW0ox/5TTJ/FOe8WHZpZsy6np7oZry3pUKOtZFQ==
   dependencies:
     cross-fetch "^3.1.5"
     dotenv "^16.0.1"
@@ -338,6 +338,7 @@
     nft.storage "^7.0.0"
     node-fetch "^3.2.10"
     run-pty "^3.0.0"
+    solmate "^6.5.0"
     wait-on "^6.0.1"
 
 "@dfdao/gamelogic@6.7.31":
@@ -4572,6 +4573,11 @@ side-channel@^1.0.4:
     call-bind "^1.0.0"
     get-intrinsic "^1.0.2"
     object-inspect "^1.9.0"
+
+solmate@^6.5.0:
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/solmate/-/solmate-6.5.0.tgz#c22d50451ba475ba2694b60f2d5d778506abaa44"
+  integrity sha512-B6pISDcja6QwbLN35FHLjTqnE3RlwgB8rV1EgCrfftEeWFHNz870yLpNoTEieaJFYYRaavcN5qzmWuYBQVErjQ==
 
 source-map-js@^1.0.2:
   version "1.0.2"

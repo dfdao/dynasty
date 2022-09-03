@@ -25,6 +25,7 @@ export const DateTimeField = ({ ...props }: any) => {
 };
 
 export const NewRoundForm: React.FC = () => {
+  console.log(`registry address`, registry);
   const [submissionError, setSubmissionError] = useState<string | undefined>(
     undefined
   );
